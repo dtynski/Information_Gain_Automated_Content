@@ -147,7 +147,7 @@ def sanitize_url(url):
     sanitized = re.sub(r'[^\w\-_\. ]', '_', url)  # Replace non-alphanumeric characters with '_'
     return sanitized
 
-def analyze_articles(thread_id, file_ids,query):
+def analyze_articles(thread_id, file_ids,query,status):
     notes = []
     individual_file_ids = []  # List to store individual file IDs
     uploaded_notes_ids = []
@@ -388,7 +388,7 @@ def main():
         file_ids = [(str(file_id), link) for file_id, link in file_ids_attempt if file_id is not None and isinstance(file_id, str)]
         status.text('Analyzing articles...')
         thread_id = client.beta.threads.create().id
-        back_from_analyze = analyze_articles(thread_id, file_ids,query)
+        back_from_analyze = analyze_articles(thread_id, file_ids,query,status)
         aggregated_notes_file_path = back_from_analyze[0]
         uploaded_file_ids = back_from_analyze[1]
         status.text('Analysis completed!')
