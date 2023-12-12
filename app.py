@@ -399,7 +399,7 @@ def main():
         thread_id = client.beta.threads.create().id
         back_from_analyze = analyze_articles(thread_id, file_ids,query,status)
         aggregated_notes_file_path = back_from_analyze[0]
-        status.text(back_from_analyze[0]
+        status.text(back_from_analyze[0])
         uploaded_file_ids = back_from_analyze[1]
         status.text('Analysis completed!')
         progress.progress(60)
