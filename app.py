@@ -15,7 +15,9 @@ from newspaper import Article
 import re
 import streamlit as st
 
-
+# Securely load API keys
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+SERP_API_KEY = st.secrets["SERP_API_KEY"]
 
 def get_citations(article_response):
     article_message_id = article_response.data[0].id
@@ -346,10 +348,6 @@ def analyze_articles(thread_id, file_ids):
 
 def main():
     st.title("Research and Outline Generation Tool")
-
-    # Securely load API keys
-    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-    SERP_API_KEY = st.secrets["SERP_API_KEY"]
 
     # Initialize OpenAI client
     client = openai.Client(api_key=OPENAI_API_KEY)
