@@ -527,12 +527,12 @@ def main():
 
             
         status.text('Outline generation concluded.')
-        status.text(outline)
+        st.text(outline)
         progress.progress(100)
 
         # File download options
-        with open(final_outline_file_path, "rb") as file:
-            st.download_button("Download Final Outline", file, file_name="final_outline.txt")
+        #with open(final_outline_file_path, "rb") as file:
+            #st.download_button("Download Final Outline", file, file_name="final_outline.txt")
         with open(outline_file_path, "rb") as file:
             st.download_button("Download All Outlines", file, file_name="all_outlines.csv")
 
