@@ -305,7 +305,7 @@ def analyze_articles(thread_id, file_ids):
 
         response = client.beta.threads.messages.list(thread_id=thread_id)
 
-        individual_outline_file_path = f'/content/final_outline_{sanitized_link}.txt'
+        individual_outline_file_path = f'final_outline_{sanitized_link}.txt'
         if len(response.data) > 0 and response.data[0].role == "assistant":
             article_message_content = response.data[0].content[0].text.value
             article_message_content2 = response.data[1].content[0].text.value
@@ -337,7 +337,7 @@ def analyze_articles(thread_id, file_ids):
 
     # Create and save a DataFrame from the notes
     df_notes = pd.DataFrame(notes)
-    notes_file_path = "/content/aggregated_notes.txt"
+    notes_file_path = "aggregated_notes.txt"
     df_notes.to_csv(notes_file_path, sep='\t', index=False)
 
 
@@ -439,7 +439,7 @@ def main():
 
             # Create a DataFrame from the notes
             df_outline = pd.DataFrame(outline)
-            final_outline_file_path = '/content/final_outline.txt'
+            final_outline_file_path = 'final_outline.txt'
 
             # Writing the string to the text file
             with open(final_outline_file_path, 'w') as file:
