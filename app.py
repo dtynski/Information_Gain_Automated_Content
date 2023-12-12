@@ -311,10 +311,10 @@ def analyze_articles(thread_id, file_ids,query):
         individual_outline_file_path = f'final_outline_{sanitized_link}.txt'
         if len(response.data) > 0 and response.data[0].role == "assistant":
             article_message_content = response.data[0].content[0].text.value
-            article_message_content2 = response.data[1].content[0].text.value
-            article_message_content3 = response.data[2].content[0].text.value
-            print(f"Older Still Part of Notes:{article_message_content3}")
-            print(f"Older Part of Notes:{article_message_content2}")
+            #article_message_content2 = response.data[1].content[0].text.value
+            #article_message_content3 = response.data[2].content[0].text.value
+            #print(f"Older Still Part of Notes:{article_message_content3}")
+            #print(f"Older Part of Notes:{article_message_content2}")
             # Count the number of words in the article message content
             word_count = len(article_message_content.split())
             print(word_count)
