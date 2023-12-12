@@ -361,10 +361,11 @@ def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     # Uploading articles
-    outline = []
-    i = 0
-    file_ids_attempt = []
+
     if st.button("Start Research"):
+        outline = []
+        i = 0
+        file_ids_attempt = []
         progress = st.progress(0)
         status = st.empty()
 
@@ -409,6 +410,7 @@ def main():
             try:
                 notes_file_response = client.files.create(file=f, purpose='assistants')
                 notes_file_id = notes_file_response.id
+                st.text(f)
             except Exception as e:
                 st.error(f"Failed to upload file: {e}")
                 return
@@ -517,7 +519,7 @@ def main():
         with open(final_outline_file_path, 'w') as file:
             for item in outline:
                 file.write(item + '\n')  # Write each item in outline to the file
-    
+                st.text(item)
         # Confirming file creation
         if os.path.exists(final_outline_file_path):
             st.success(f"Outline saved to {final_outline_file_path}")
