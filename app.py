@@ -387,7 +387,7 @@ def main():
         file_ids = [(str(file_id), link) for file_id, link in file_ids_attempt if file_id is not None and isinstance(file_id, str)]
         status.text('Analyzing articles...')
         thread_id = client.beta.threads.create().id
-        back_from_analyze = analyze_articles(thread_id, file_ids)
+        back_from_analyze = analyze_articles(thread_id, file_ids,query)
         aggregated_notes_file_path = back_from_analyze[0]
         uploaded_file_ids = back_from_analyze[1]
         status.text('Analysis completed!')
