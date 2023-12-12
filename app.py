@@ -346,7 +346,7 @@ def analyze_articles(thread_id, file_ids,query,status):
 
 
 
-    return notes_file_path, individual_file_ids
+    return notes_file_path, individual_file_ids, individual_outline_file_path
 
 
 import streamlit as st
@@ -360,7 +360,10 @@ import openai
 def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
-
+    # Uploading articles
+    outline = []
+    i = 0
+    file_ids_attempt = []
     if st.button("Start Research"):
         progress = st.progress(0)
         status = st.empty()
@@ -371,10 +374,7 @@ def main():
         status.text('Articles scraped successfully!')
         progress.progress(10)
 
-        # Uploading articles
-        outline = []
-        i = 0
-        file_ids_attempt = []
+
 
         for index, row in articles.iterrows():
             article = {
