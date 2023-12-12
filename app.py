@@ -318,6 +318,7 @@ def analyze_articles(thread_id, file_ids,query):
             # Count the number of words in the article message content
             word_count = len(article_message_content.split())
             print(word_count)
+            status.text(article_message_content)
 
             # Check if the word count is 500 or more
             if word_count >= 300:
@@ -434,6 +435,7 @@ def main():
             run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
             if run_status in ['queued', 'in_progress']:
                 time.sleep(5)  # Wait for 5 seconds before polling again
+                print(run_status)
                 continue
             if run_status in ['completed', 'failed']:
                 break
