@@ -465,11 +465,11 @@ def main():
             while True:
                 run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
                 if run_status in ['queued', 'in_progress']:
-                run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+                    run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
             
-                time.sleep(5)  # Wait for 5 seconds before polling again
-                print(run_status)
-                continue
+                    time.sleep(5)  # Wait for 5 seconds before polling again
+                    print(run_status)
+                    continue
                 if run_status in ['completed', 'failed']:
                     print(run_status)
                     print("run status outline loop")
