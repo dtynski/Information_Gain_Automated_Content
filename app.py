@@ -503,31 +503,29 @@ def main():
             i += 1
 
         status.text('Finalizing outline...')
+        outline_file_path = "all_outlines.csv"
+
         df_outline = pd.DataFrame(outline)
-        df_outline.to_csv("outline.csv", sep='\t', index=False)
+        df_outline.to_csv(outline_file_path, sep='\t', index=False)
         final_outline_file_path = 'final_outline.txt'
 
-        if outline:
-            final_outline_file_path = 'final_outline.txt'  # File path for saving
 
-            # Writing the content to the text file
-            with open(final_outline_file_path, 'w') as file:
-                for item in outline:
-                    file.write(item + '\n')  # Write each item in outline to the file
-        
-            # Confirming file creation
-            if os.path.exists(final_outline_file_path):
-                st.success(f"Outline saved to {final_outline_file_path}")
-                # File download option
-                with open(final_outline_file_path, "rb") as file:
-                    st.download_button("Download Final Outline", file, file_name="final_outline.txt")
-            else:
-                st.error("Failed to save the outline file.")
+        # Writing the content to the text file
+        with open(final_outline_file_path, 'w') as file:
+            for item in outline:
+                file.write(item + '\n')  # Write each item in outline to the file
+    
+        # Confirming file creation
+        if os.path.exists(final_outline_file_path):
+            st.success(f"Outline saved to {final_outline_file_path}")
+            # File download option
+            with open(final_outline_file_path, "rb") as file:
+                st.download_button("Download Final Outline", file, file_name="final_outline.txt")
         else:
-            st.error("No outline data to save.")
+            st.error("Failed to save the outline file.")
+
             
-        outline_file_path = "all_outlines.csv"
-        
+
 
         status.text('Outline generation concluded.')
         status.text(outline)
