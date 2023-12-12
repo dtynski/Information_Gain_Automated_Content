@@ -509,10 +509,10 @@ def main():
                 # File download option
                 with open(final_outline_file_path, "rb") as file:
                     st.download_button("Download Final Outline", file, file_name="final_outline.txt")
-                    else:
-                        st.error("Failed to save the outline file.")
-                    else:
-                        st.error("No outline data to save.")
+            else:
+                st.error("Failed to save the outline file.")
+        else:
+            st.error("No outline data to save.")
             
         outline_file_path = "all_outlines.csv"
         df_outline.to_csv(outline_file_path, sep='\t', index=False)
