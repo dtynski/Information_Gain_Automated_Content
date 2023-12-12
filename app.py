@@ -348,121 +348,139 @@ def analyze_articles(thread_id, file_ids,query):
     return notes_file_path, individual_file_ids
 
 
+import streamlit as st
+import pandas as pd
+import time
+import openai
+# Import other necessary libraries and functions
+
+# Assuming your functions (scrape_articles, upload_article, analyze_articles, etc.) are defined here...
 
 def main():
     st.title("Research and Outline Generation Tool")
-
-
-    # User input
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     
     if st.button("Start Research"):
-        with st.spinner('Processing...'):
-            articles = scrape_articles(query)
-            outline = []
-            i = 0
+        progress = st.progress(0)
+        status = st.empty()
 
-            file_ids_attempt = []
-            for index, row in articles.iterrows():
-                article_content = '\n'.join(f'{key}: {value}' for key, value in row.items())
-                file_id = upload_article(article_content, index, row['Title'])
-                file_ids_attempt.append((file_id, row['Title']))
+        # Scraping articles
+        status.text('Scraping articles...')
+        articles = scrape_articles(query)
+        status.text('Articles scraped successfully!')
+        progress.progress(10)
 
-            file_ids = [(str(file_id), link) for file_id, link in file_ids_attempt if file_id is not None and isinstance(file_id, str)]
+        # Uploading articles
+        outline = []
+        i = 0
+        file_ids_attempt = []
 
-            thread_id = client.beta.threads.create().id
-            back_from_analyze = analyze_articles(thread_id, file_ids,query)
-            aggregated_notes_file_path = back_from_analyze[0]
-            uploaded_file_ids = back_from_analyze[1]
+        for index, row in articles.iterrows():
+            status.text(f'Uploading article {index + 1} of {len(articles)}...')
+            article_content = '\n'.join(f'{key}: {value}' for key, value in row.items())
+            file_id = upload_article(article_content, index, row['Title'])
+            file_ids_attempt.append((file_id, row['Title']))
+        status.text('All articles uploaded successfully!')
+        progress.progress(30)
 
-            with open(aggregated_notes_file_path, 'rb') as f:
-                st.text(f"Uploading file: {aggregated_notes_file_path}")
-                st.text(f"File size: {os.path.getsize(aggregated_notes_file_path)} bytes")
-                
-                try:
-                    notes_file_response = client.files.create(file=f, purpose='assistants')
-                    notes_file_id = notes_file_response.id
-                    st.text(f"File uploaded successfully. File ID: {notes_file_id}")
-                except Exception as e:
-                    st.error(f"Failed to upload file: {e}")
-                    
-            outline_assistant_id = client.beta.assistants.create(
-                instructions=f"Please simulate an expert on writing comprehensive long-form article outlines on the topic of {query}."
-                "As a superhuman AI, you do this job better than any human in terms of information gain."
-                "Based on the files provided in the reference corpuses, please improve, expand and extend the article outline with each new round."
-                f"The reference files have the following file ids: {notes_file_id}. You DO have access to these files, even if you assume you dont."
-                "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.Write at least 6000 words."
-                "Write your extremely detailed outline in markdown with deep hierarchies."
-                "The outline should include all unique information found in the corpus, highly organized, retaining all salient facts. The primary goal of this outline is maximum information density.6,000 word MINIMUM."
-                "Say research complete when done.",
-                model="gpt-3.5-turbo-1106",
-                tools=[{"type": "retrieval"}]
-            ).id
+        # Analyzing articles
+        file_ids = [(str(file_id), link) for file_id, link in file_ids_attempt if file_id is not None and isinstance(file_id, str)]
+        status.text('Analyzing articles...')
+        thread_id = client.beta.threads.create().id
+        back_from_analyze = analyze_articles(thread_id, file_ids)
+        aggregated_notes_file_path = back_from_analyze[0]
+        uploaded_file_ids = back_from_analyze[1]
+        status.text('Analysis completed!')
+        progress.progress(60)
 
-            outline_thread_id = client.beta.threads.create().id
+        # Finalizing outline
+        with open(aggregated_notes_file_path, 'rb') as f:
+            try:
+                notes_file_response = client.files.create(file=f, purpose='assistants')
+                notes_file_id = notes_file_response.id
+            except Exception as e:
+                st.error(f"Failed to upload file: {e}")
+                return
 
-            prompt = "Please create an initial outline based on the aggregated notes."
+        outline_assistant_id = client.beta.assistants.create(
+            instructions=f"Please simulate an expert on writing comprehensive long-form article outlines on the topic of {query}."
+            "As a superhuman AI, you do this job better than any human in terms of information gain."
+            "Based on the files provided in the reference corpuses, please improve, expand and extend the article outline with each new round."
+            f"The reference files have the following file ids: {notes_file_id}. You DO have access to these files, even if you assume you dont."
+            "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.Write at least 6000 words."
+            "Write your extremely detailed outline in markdown with deep hierarchies."
+            "The outline should include all unique information found in the corpus, highly organized, retaining all salient facts. The primary goal of this outline is maximum information density.6,000 word MINIMUM."
+            "Say research complete when done.",
+            model="gpt-3.5-turbo-1106",
+            tools=[{"type": "retrieval"}]
+        ).id
+
+        outline_thread_id = client.beta.threads.create().id
+
+        prompt = "Please create an initial outline based on the aggregated notes."
+        client.beta.threads.messages.create(
+            thread_id=outline_thread_id,
+            role="user",
+            content=prompt,
+            file_ids=[notes_file_id]
+        )
+
+        run_response = client.beta.threads.runs.create(
+            thread_id=outline_thread_id,
+            assistant_id=outline_assistant_id
+        )
+
+        while i < 3:
+            run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+            if run_status in ['queued', 'in_progress']:
+                time.sleep(5)  # Wait for 5 seconds before polling again
+                continue
+            if run_status in ['completed', 'failed']:
+                break
+            elif run_status == 'requires_action':
+                break
+
+            response = client.beta.threads.messages.list(thread_id=outline_thread_id)
+            the_outline = response.data[-1].content[0].text
+            prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {notes_file_id} for the goal of the query: {query}."
+            "For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]"
+            "You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline."
+            "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.The goal is to add all missing facts, data, stats, main points, missing sections, missing subsections, etc."
+            f"Here is the outline to extend and improve using the corpus: {the_outline.value}"
+
             client.beta.threads.messages.create(
                 thread_id=outline_thread_id,
                 role="user",
                 content=prompt,
                 file_ids=[notes_file_id]
             )
+
             run_response = client.beta.threads.runs.create(
                 thread_id=outline_thread_id,
                 assistant_id=outline_assistant_id
             )
 
-            while i < 3:
-                run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
-                if run_status in ['queued', 'in_progress']:
-                    time.sleep(5)  # Wait for 5 seconds before polling again
-                    continue
-                if run_status in ['completed', 'failed']:
-                    break
-                elif run_status == 'requires_action':
-                    break
+            i += 1
 
-                response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-                the_outline = response.data[-1].content[0].text
-                prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {notes_file_id} for the goal of the query: {query}."
-                "For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]"
-                "You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline."
-                "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.The goal is to add all missing facts, data, stats, main points, missing sections, missing subsections, etc."
-                f"Here is the outline to extend and improve using the corpus: {the_outline.value}"
+        status.text('Finalizing outline...')
+        df_outline = pd.DataFrame(outline)
+        final_outline_file_path = 'final_outline.txt'
 
-                client.beta.threads.messages.create(
-                    thread_id=outline_thread_id,
-                    role="user",
-                    content=prompt,
-                    file_ids=[notes_file_id]
-                )
+        with open(final_outline_file_path, 'w') as file:
+            file.write(outline[-1])
+        outline_file_path = "all_outlines.csv"
+        df_outline.to_csv(outline_file_path, sep='\t', index=False)
 
-                run_response = client.beta.threads.runs.create(
-                    thread_id=outline_thread_id,
-                    assistant_id=outline_assistant_id
-                )
+        status.text('Outline generation concluded.')
+        progress.progress(100)
 
-                i += 1
+        # File download options
+        with open(final_outline_file_path, "rb") as file:
+            st.download_button("Download Final Outline", file, file_name="final_outline.txt")
+        with open(outline_file_path, "rb") as file:
+            st.download_button("Download All Outlines", file, file_name="all_outlines.csv")
 
-            # Create a DataFrame from the notes
-            df_outline = pd.DataFrame(outline)
-            final_outline_file_path = 'final_outline.txt'
-
-            # Writing the string to the text file
-            with open(final_outline_file_path, 'w') as file:
-                file.write(outline[-1])
-            # Save DataFrame to a text file
-            outline_file_path = "all_outlines.csv"
-            df_outline.to_csv(outline_file_path, sep='\t', index=False)
-
-            # File download options
-            with open(final_outline_file_path, "rb") as file:
-                st.download_button("Download Final Outline", file, file_name="final_outline.txt")
-            with open(outline_file_path, "rb") as file:
-                st.download_button("Download All Outlines", file, file_name="all_outlines.csv")
-
-            st.success("Research and outline generation concluded.")
+        st.success("Research and outline generation completed successfully.")
 
 if __name__ == "__main__":
     main()
