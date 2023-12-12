@@ -518,6 +518,7 @@ def main():
         df_outline.to_csv(outline_file_path, sep='\t', index=False)
 
         status.text('Outline generation concluded.')
+        status.text(outline)
         progress.progress(100)
 
         # File download options
