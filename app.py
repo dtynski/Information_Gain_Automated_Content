@@ -19,6 +19,9 @@ import streamlit as st
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 SERP_API_KEY = st.secrets["SERP_API_KEY"]
 
+# Initialize OpenAI client
+client = openai.Client(api_key=OPENAI_API_KEY)
+
 def get_citations(article_response):
     article_message_id = article_response.data[0].id
     article_message_content = article_response.data[0].content[0].text
@@ -349,8 +352,6 @@ def analyze_articles(thread_id, file_ids):
 def main():
     st.title("Research and Outline Generation Tool")
 
-    # Initialize OpenAI client
-    client = openai.Client(api_key=OPENAI_API_KEY)
 
     # User input
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
