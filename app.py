@@ -377,6 +377,15 @@ def main():
         file_ids_attempt = []
 
         for index, row in articles.iterrows():
+            article = {
+                    'Root Domain': row['Root Domain'],
+                    'Link': row['Link'],
+                    'Title': row['Title'],
+                    'Authors': row['Authors'],
+                    'Publish Date': row['Publish Date'],
+                    'Snippet': row['Snippet'],
+                    'Text': row['Text']
+                }
             status.text(f'Uploading article {index + 1} of {len(articles)}...')
             article_content = '\n'.join(f'{key}: {value}' for key, value in row.items())
             file_id = upload_article(article_content, index, row['Title'])
@@ -495,6 +504,7 @@ def main():
 
         status.text('Finalizing outline...')
         df_outline = pd.DataFrame(outline)
+        df_outline.to_csv("outline.csv", sep='\t', index=False)
         final_outline_file_path = 'final_outline.txt'
 
         if outline:
@@ -517,7 +527,7 @@ def main():
             st.error("No outline data to save.")
             
         outline_file_path = "all_outlines.csv"
-        df_outline.to_csv(outline_file_path, sep='\t', index=False)
+        
 
         status.text('Outline generation concluded.')
         status.text(outline)
