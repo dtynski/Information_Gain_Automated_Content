@@ -482,6 +482,8 @@ def main():
                     print(run_status)
                     continue
                 if run_status in ['completed', 'failed']:
+                    run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+
                     print(run_status)
                     print("run status outline loop")
                     break
@@ -518,15 +520,11 @@ def main():
         # Confirming file creation
         if os.path.exists(final_outline_file_path):
             st.success(f"Outline saved to {final_outline_file_path}")
-            # File download option
-            with open(final_outline_file_path, "rb") as file:
-                st.download_button("Download Final Outline", file, file_name="final_outline.txt")
+
         else:
             st.error("Failed to save the outline file.")
 
             
-
-
         status.text('Outline generation concluded.')
         status.text(outline)
         progress.progress(100)
