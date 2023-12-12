@@ -341,7 +341,7 @@ def analyze_articles(thread_id, file_ids,query,status):
 
     # Create and save a DataFrame from the notes
     df_notes = pd.DataFrame(notes)
-    notes_file_path = "aggregated_notes.txt"
+    notes_file_path = "aggregated_notes.csv"
     df_notes.to_csv(notes_file_path, sep='\t', index=False)
 
 
@@ -399,6 +399,7 @@ def main():
         thread_id = client.beta.threads.create().id
         back_from_analyze = analyze_articles(thread_id, file_ids,query,status)
         aggregated_notes_file_path = back_from_analyze[0]
+        status.text(back_from_analyze[0]
         uploaded_file_ids = back_from_analyze[1]
         status.text('Analysis completed!')
         progress.progress(60)
