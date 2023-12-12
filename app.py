@@ -375,9 +375,16 @@ def main():
             uploaded_file_ids = back_from_analyze[1]
 
             with open(aggregated_notes_file_path, 'rb') as f:
-                notes_file_response = client.files.create(file=f, purpose='assistants')
-                notes_file_id = notes_file_response.id
-
+                st.text(f"Uploading file: {aggregated_notes_file_path}")
+                st.text(f"File size: {os.path.getsize(aggregated_notes_file_path)} bytes")
+                
+                try:
+                    notes_file_response = client.files.create(file=f, purpose='assistants')
+                    notes_file_id = notes_file_response.id
+                    st.text(f"File uploaded successfully. File ID: {notes_file_id}")
+                except Exception as e:
+                    st.error(f"Failed to upload file: {e}")
+                    
             outline_assistant_id = client.beta.assistants.create(
                 instructions=f"Please simulate an expert on writing comprehensive long-form article outlines on the topic of {query}."
                 "As a superhuman AI, you do this job better than any human in terms of information gain."
