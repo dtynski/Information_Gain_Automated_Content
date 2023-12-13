@@ -502,52 +502,51 @@ def main():
         status.text('Finalizing outline...')
         outline_file_path = "all_outlines.csv"
         
-        @st.cache
-        def convert_df(df):
-            # IMPORTANT: Cache the conversion to prevent computation on every rerun
-            return df.to_csv().encode('utf-8')
-            
+
+
+        def convert_df_to_csv_bytes(df):
+            # Convert DataFrame to CSV and encode to bytes
+            return df.to_csv(index=False).encode('utf-8')
+        
+        def save_string_to_file(string_data, file_name):
+            # Save a string to a file
+            with open(file_name, 'w') as file:
+                file.write(string_data)
+        
+        def save_bytes_to_file(bytes_data, file_name):
+            # Save bytes data to a file
+            with open(file_name, 'wb') as file:
+                file.write(bytes_data)
+                
         df_outline = pd.DataFrame(outline)
-        final_outline_file_path = 'final_outline.txt'
-            
+        
         status.text('Outline generation concluded.')
         st.text(outline)
         progress.progress(100)
         
-
-        
-        aggregate_notes_csv = convert_df(full_notes)
-        st.download_button(
-            label="Download Aggregated Notes",
-            data=aggregate_notes_csv,
-            file_name=aggregated_notes_file_path,
-            mime='text/csv',
-        )
-
-        all_outlines_csv = convert_df(df_outline)
-        st.download_button(
-            label="Download All Outlines",
-            data=all_outlines_csv,
-            file_name=aggregated_notes_file_path,
-            mime='text/csv',
-        )
+        # Convert DataFrames to CSV bytes
+        aggregate_notes_csv_bytes = convert_df_to_csv_bytes(full_notes)
+        all_outlines_csv_bytes = convert_df_to_csv_bytes(df_outline)
         
         # Create a zip archive
         with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # Save the string as a text file
-            with open('Final_Outline.txt', 'w') as text_file:
-                text_file.write(str(outline))
-            zipf.write('Final_Outline.txt', 'Final_Outline.txt')  # Add the text file to the zip archive
-            
-            # Save the DataFrame as a CSV file
-            full_notes.to_csv('Full_Notes.csv', index=False)
-            zipf.write('Full_Notes.csv', 'Full_Notes.csv')  # Add the CSV file to the zip archive
-            
-            # Save the DataFrame as a CSV file
-            all_outlines_csv.to_csv('all_outlines.csv', index=False)
-            zipf.write('all_outlines.csv', 'all_outlines.csv')  # Add the CSV file to the zip archive
+            # Save the outline string as a text file and add to the zip archive
+            outline_file_name = 'Final_Outline.txt'
+            save_string_to_file(str(outline), outline_file_name)
+            zipf.write(outline_file_name, outline_file_name)
+        
+            # Save the full notes as a CSV file and add to the zip archive
+            full_notes_file_name = 'Full_Notes.csv'
+            save_bytes_to_file(aggregate_notes_csv_bytes, full_notes_file_name)
+            zipf.write(full_notes_file_name, full_notes_file_name)
+        
+            # Save the all outlines as a CSV file and add to the zip archive
+            all_outlines_file_name = 'All_Outlines.csv'
+            save_bytes_to_file(all_outlines_csv_bytes, all_outlines_file_name)
+            zipf.write(all_outlines_file_name, all_outlines_file_name)
         
         print('Successfully created All_Results.zip')
+
 
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
