@@ -347,8 +347,8 @@ def analyze_articles(file_ids, query, status, client):
     return df_notes, individual_file_ids, df_notes
     
 def convert_df_to_csv_bytes(df):
-# Convert DataFrame to CSV and encode to bytes
-return df.to_csv(index=False).encode('utf-8')
+    # Convert DataFrame to CSV and encode to bytes
+    return df.to_csv(index=False).encode('utf-8')
 
 def save_string_to_file(string_data, file_name):
     # Save a string to a file
