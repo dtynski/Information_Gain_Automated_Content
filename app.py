@@ -510,7 +510,7 @@ def main():
 
                 
         df_outline = pd.DataFrame(outline)
-        st.write("Content to be added to outline:", article_message_content)
+        st.write("Content to be added to outline:", outline_message_content)
 
         
         status.text('Outline generation concluded.')
