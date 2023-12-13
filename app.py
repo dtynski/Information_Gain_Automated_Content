@@ -326,9 +326,27 @@ def worker(thread_id, file_id_link_tuple, query,status,client):
                 individual_file_id = response.id
 
             return {"file_id": file_id, "note": article_message_content, "individual_file_id": individual_file_id}
-
+            
     return None
+    
+def analyze_articles(thread_id, file_ids, query, status, client):
+    notes = []
+    individual_file_ids = []
 
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(worker, thread_id, file_id_link_tuple, query, client) for file_id_link_tuple in file_ids]
+
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+            if result is not None:
+                notes.append(result["note"])
+                individual_file_ids.append(result["individual_file_id"])
+
+    df_notes = pd.DataFrame({'Note': notes})
+    notes_file_path = "aggregated_notes.csv"
+    df_notes.to_csv(notes_file_path, sep='\t', index=False)
+
+    return notes_file_path, individual_file_ids, df_notes
 def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
@@ -370,7 +388,7 @@ def main():
         file_ids = [(str(file_id), link) for file_id, link in file_ids_attempt if file_id is not None and isinstance(file_id, str)]
         status.text('Analyzing articles...')
         thread_id = client.beta.threads.create().id
-        back_from_analyze = worker(thread_id, file_ids,query,status,client)
+        back_from_analyze = analyze_articles(thread_id, file_ids,query,status,client)
         aggregated_notes_file_path = back_from_analyze[0]
         status.text(back_from_analyze[0])
         uploaded_file_ids = back_from_analyze[1]
