@@ -507,8 +507,10 @@ def main():
         
            
             #message_citations = get_citations(response)
-            outline.append(article_message_content.value)
-    
+            outline.append(article_message_content)
+            print(outline)
+            status.text("should add to outline here)
+            status.text(outline)
             i += 1
 
         status.text('Finalizing outline...')
