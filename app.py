@@ -505,9 +505,9 @@ def main():
             article_message_role= response.data[0].role
             article_message_file_id = response.data[0].file_ids
         
-            if article_message_role == "assistant":
-                #message_citations = get_citations(response)
-                outline.append(article_message_content.value)
+           
+            #message_citations = get_citations(response)
+            outline.append(article_message_content.value)
     
             i += 1
 
