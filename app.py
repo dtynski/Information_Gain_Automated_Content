@@ -511,47 +511,41 @@ def main():
 
         status.text('Finalizing outline...')
         outline_file_path = "all_outlines.csv"
-    
-        df_outline = pd.DataFrame(outline)
-        df_outline.to_csv(outline_file_path, sep='\t', index=False)
-        final_outline_file_path = 'final_outline.txt'
-    
-    
-        # Writing the content to the text file
-        with open(final_outline_file_path, 'w') as file:
-            for item in outline:
-                file.write(item + '\n')  # Write each item in outline to the file
-                st.text(item)
-        # Confirming file creation
-        if os.path.exists(final_outline_file_path):
-            st.success(f"Outline saved to {final_outline_file_path}")
-    
-        else:
-            st.error("Failed to save the outline file.")
-    
-            
-        status.text('Outline generation concluded.')
-        st.text(outline)
-        progress.progress(100)
         
         @st.cache
         def convert_df(df):
             # IMPORTANT: Cache the conversion to prevent computation on every rerun
             return df.to_csv().encode('utf-8')
+            
+        df_outline = pd.DataFrame(outline)
+        final_outline_file_path = 'final_outline.txt'
+            
+        status.text('Outline generation concluded.')
+        st.text(outline)
+        progress.progress(100)
         
-        csv = convert_df(full_notes)
+
+        
+        aggregate_notes_csv = convert_df(full_notes)
         st.download_button(
-            label="Download data as CSV",
-            data=csv,
+            label="Download Aggregated Notes",
+            data=aggregate_notes_csv,
             file_name=aggregated_notes_file_path,
             mime='text/csv',
         )
 
-        # File download options
-        #with open(final_outline_file_path, "rb") as file:
-            #st.download_button("Download Final Outline", file, file_name="final_outline.txt")
-        with open(outline_file_path, "rb") as file:
-            st.download_button("Download All Outlines", file, file_name="all_outlines.csv")
+        all_outlines_csv = convert_df(df_outline)
+        st.download_button(
+            label="Download All Outlines",
+            data=all_outlines,
+            file_name=aggregated_notes_file_path,
+            mime='text/csv',
+        )
+
+        st.download_button('Download Final Article', outline[-1])
+
+
+
     
         st.success("Research and outline generation completed successfully.")
 
