@@ -469,7 +469,7 @@ def main():
             assistant_id=outline_assistant_id
         )
         print(f"Outline Run created with ID: {run_response.id}")
-        print(f"Created message for file ID {notes_file_id} in thread {outline_thread_id}")
+        print(f"Created message for file ID {uploaded_file_ids} in thread {outline_thread_id}")
         
         while True:
             run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
