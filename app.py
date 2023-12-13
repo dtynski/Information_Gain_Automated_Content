@@ -15,6 +15,7 @@ from newspaper import Article
 import re
 import streamlit as st
 import zipfile
+import concurrent.futures
 
 
 # Securely load API keys
@@ -149,18 +150,25 @@ def sanitize_url(url):
     sanitized = re.sub(r'[^\w\-_\. ]', '_', url)  # Replace non-alphanumeric characters with '_'
     return sanitized
 
-def analyze_articles(thread_id, file_ids,query,status):
-    notes = []
-    individual_file_ids = []  # List to store individual file IDs
-    uploaded_notes_ids = []
-    for file_id, link in file_ids:
-        if file_id is None:
-            continue
 
-        sanitized_link = sanitize_url(link)
 
-        # Create an Assistant with retrieval for analyzing articles
-        assistant_id = client.beta.assistants.create(
+import concurrent.futures
+import time
+import pandas as pd
+
+def sanitize_url(url):
+    # Implement your URL sanitization logic here
+    return url
+
+def worker(thread_id, file_id_link_tuple, query, client):
+    file_id, link = file_id_link_tuple
+    if file_id is None:
+        return None
+
+    sanitized_link = sanitize_url(link)
+
+    # Create an Assistant with retrieval for analyzing articles
+    assistant_id = client.beta.assistants.create(
             instructions=f"""You are an all-knowing expert AI researcher information extractor. You are compiling as much useful information and as many facts as you can for an article you are writing about {query}
             You always cite your sources by referencing the URL where the info was found as the source.
             Analyze articles and provide insights using the charting method.Write at least 6000 words.
@@ -267,97 +275,59 @@ def analyze_articles(thread_id, file_ids,query,status):
             tools=[{"type": "retrieval"}]
         ).id
 
-        client.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=f"""Please analyze the file with ID {file_id} and extract ALL possible salient facts and information.
-                      At the beginning always start with:
-                      ###
-                      Topic/Subject: [Main Topic or Subject Name]
-                      Article Title: The title of the article you are referencing.
-                      Source: The URL of the website you are referencing. Always starts with http or https
-                      Authors: If there are any authors found, include the author name and bio here
-                      Date: If the article is dated, include the date found here.
-                      ###
-                      The total length of the information extracted should be at least 6000 words long. Always include at least one generated data table, even if it is simple.
-                      Never say anything like -i will now begin taking notes-, just start taking notes. You should always start your response with:
-                      Article Source Title: You will fill this in with The Title of the Article You are extracting info from.
-                      Article Source URL for Later Citation: You will fill this in with The URL of the Article. This must be the http or https url found in the corpus.
-                      etc.
-                      Full Notes:""",
-            file_ids=[file_id]
-        )
-        print(f"Created message for file ID {file_id} in thread {thread_id}")
+    client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=f"""Please analyze the file with ID {file_id} and extract ALL possible salient facts and information.
+                  At the beginning always start with:
+                  ###
+                  Topic/Subject: [Main Topic or Subject Name]
+                  Article Title: The title of the article you are referencing.
+                  Source: The URL of the website you are referencing. Always starts with http or https
+                  Authors: If there are any authors found, include the author name and bio here
+                  Date: If the article is dated, include the date found here.
+                  ###
+                  The total length of the information extracted should be at least 6000 words long. Always include at least one generated data table, even if it is simple.
+                  Never say anything like -i will now begin taking notes-, just start taking notes. You should always start your response with:
+                  Article Source Title: You will fill this in with The Title of the Article You are extracting info from.
+                  Article Source URL for Later Citation: You will fill this in with The URL of the Article. This must be the http or https url found in the corpus.
+                  etc.
+                  Full Notes:""",
+        file_ids=[file_id]
+    )
+    print(f"Created message for file ID {file_id} in thread {thread_id}")
 
-        run_response = client.beta.threads.runs.create(
-            thread_id=thread_id,
-            assistant_id=assistant_id
-        )
-        print(f"Run created with ID: {run_response.id}")
+    run_response = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id
+    )
+    print(f"Run created with ID: {run_response.id}")
 
-        while True:
-            run_status = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_response.id).status
-            if run_status in ['queued', 'in_progress']:
-                time.sleep(5)  # Wait for 5 seconds before polling again
-                print(run_status)
-                continue
-            if run_status in ['completed', 'failed']:
-                print(run_status)
-                break
-            elif run_status == 'requires_action':
-                print(run_status)
-                break
+    while True:
+        run_status = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_response.id).status
+        if run_status in ['queued', 'in_progress']:
+            time.sleep(5)
+            continue
+        if run_status in ['completed', 'failed', 'requires_action']:
+            break
 
-        response = client.beta.threads.messages.list(thread_id=thread_id)
+    response = client.beta.threads.messages.list(thread_id=thread_id)
+    if len(response.data) > 0 and response.data[0].role == "assistant":
+        article_message_content = response.data[0].content[0].text.value
+        word_count = len(article_message_content.split())
 
-        individual_outline_file_path = f'final_outline_{sanitized_link}.txt'
-        if len(response.data) > 0 and response.data[0].role == "assistant":
-            article_message_content = response.data[0].content[0].text.value
-            #article_message_content2 = response.data[1].content[0].text.value
-            #article_message_content3 = response.data[2].content[0].text.value
-            #print(f"Older Still Part of Notes:{article_message_content3}")
-            #print(f"Older Part of Notes:{article_message_content2}")
-            # Count the number of words in the article message content
-            word_count = len(article_message_content.split())
-            print(word_count)
-            status.text(article_message_content)
+        if word_count >= 300:
+            note_file_path = f'final_outline_{sanitized_link}.txt'
+            with open(note_file_path, 'w', encoding='utf-8') as file:
+                file.write(article_message_content)
 
-            # Check if the word count is 500 or more
-            if word_count >= 300:
-                # Add to notes if the condition is met
-                notes.append({"file_id": file_id, "note": article_message_content})
+            with open(note_file_path, 'rb') as file:
+                response = client.files.create(file=file, purpose='assistants')
+                individual_file_id = response.id
 
-                # Write the content to a file
-                with open(individual_outline_file_path, 'w', encoding='utf-8') as file:
-                    file.write(article_message_content)
+            return {"file_id": file_id, "note": article_message_content, "individual_file_id": individual_file_id}
 
-                # Upload the file and store the individual file ID
-                with open(individual_outline_file_path, 'rb') as file:
-                    response = client.files.create(file=file, purpose='assistants')
-                    individual_file_id = response.id
-                    individual_file_ids.append(individual_file_id)
-            else:
-                print(f"Skipping file ID {file_id} as the note is less than 500 words.")
-
-    print(f"Individual File Ids:{individual_file_ids}")
-
-    # Create and save a DataFrame from the notes
-    df_notes = pd.DataFrame(notes)
-    notes_file_path = "aggregated_notes.csv"
-    df_notes.to_csv(notes_file_path, sep='\t', index=False)
-
-
-
-    return notes_file_path, individual_file_ids, df_notes
-
-
-import streamlit as st
-import pandas as pd
-import time
-import openai
-# Import other necessary libraries and functions
-
-# Assuming your functions (scrape_articles, upload_article, analyze_articles, etc.) are defined here...
+    return None
 
 def main():
     st.title("Research and Outline Generation Tool")
@@ -548,7 +518,7 @@ def main():
         with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
             # Save the string as a text file
             with open('Final_Outline.txt', 'w') as text_file:
-                text_file.write(outline)
+                text_file.write(str(outline))
             zipf.write('Final_Outline.txt', 'Final_Outline.txt')  # Add the text file to the zip archive
             
             with open('Full_Notes.txt', 'w') as text_file:
