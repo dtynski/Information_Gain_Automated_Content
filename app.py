@@ -329,12 +329,12 @@ def worker(file_id_link_tuple, query,status,client):
             
     return None
     
-def analyze_articles(thread_id, file_ids, query, status, client):
+def analyze_articles(file_ids, query, status, client):
     notes = []
     individual_file_ids = []
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(worker, thread_id, file_id_link_tuple, query, status, client) for file_id_link_tuple in file_ids]
+        futures = [executor.submit(worker,file_id_link_tuple, query, status, client) for file_id_link_tuple in file_ids]
 
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
