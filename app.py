@@ -501,7 +501,7 @@ def main():
 
         status.text('Finalizing outline...')
         status.text(outline)
-        print(f"Outline:{outline})
+        print(f"Outline:{outline}")
         def convert_df_to_csv_bytes(df):
             # Convert DataFrame to CSV and encode to bytes
             return df.to_csv(index=False).encode('utf-8')
