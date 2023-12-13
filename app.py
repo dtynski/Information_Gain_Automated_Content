@@ -334,7 +334,7 @@ def analyze_articles(thread_id, file_ids, query, status, client):
     individual_file_ids = []
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [executor.submit(worker, thread_id, file_id_link_tuple, query, client) for file_id_link_tuple in file_ids]
+        futures = [executor.submit(worker, thread_id, file_id_link_tuple, query, status, client) for file_id_link_tuple in file_ids]
 
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
@@ -347,6 +347,7 @@ def analyze_articles(thread_id, file_ids, query, status, client):
     df_notes.to_csv(notes_file_path, sep='\t', index=False)
 
     return notes_file_path, individual_file_ids, df_notes
+    
 def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
