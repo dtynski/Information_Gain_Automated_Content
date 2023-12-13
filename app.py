@@ -414,7 +414,6 @@ def main():
         try:
             notes_file_response = client.files.create(file=aggregated_notes_dataframe, purpose='assistants')
             notes_file_id = notes_file_response.id
-            st.text(f)
         except Exception as e:
             st.error(f"Failed to upload file: {e}")
             return
