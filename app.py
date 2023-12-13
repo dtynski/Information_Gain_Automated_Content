@@ -543,9 +543,6 @@ def main():
             file_name=aggregated_notes_file_path,
             mime='text/csv',
         )
-
-        st.download_button('Download Final Article', outline)
-
         
         # Create a zip archive
         with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
