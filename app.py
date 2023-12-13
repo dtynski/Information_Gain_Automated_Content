@@ -539,9 +539,9 @@ def main():
                 text_file.write(str(outline))
             zipf.write('Final_Outline.txt', 'Final_Outline.txt')  # Add the text file to the zip archive
             
-            with open('Full_Notes.txt', 'w') as text_file:
-                text_file.write(full_notes)
-            zipf.write('Full_Notes.txt', 'Full_Notes.txt')  # Add the text file to the zip archive
+            # Save the DataFrame as a CSV file
+            full_notes.to_csv('Full_Notes.csv', index=False)
+            zipf.write('Full_Notes.csv', 'Full_Notes.csv')  # Add the CSV file to the zip archive
             
             # Save the DataFrame as a CSV file
             all_outlines_csv.to_csv('all_outlines.csv', index=False)
