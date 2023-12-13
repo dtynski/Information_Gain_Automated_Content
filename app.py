@@ -439,70 +439,70 @@ def main():
             assistant_id=outline_assistant_id
         )
 
-        while i < 3:
+
+        run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+        if run_status in ['queued', 'in_progress']:
+            time.sleep(5)  # Wait for 5 seconds before polling again
+            print(run_status)
+            continue
+        if run_status in ['completed', 'failed']:
+            break
+        elif run_status == 'requires_action':
+            break
+
+        response = client.beta.threads.messages.list(thread_id=outline_thread_id)
+        the_outline = response.data[-1].content[0].text
+        prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}."
+        "For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]"
+        "You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline."
+        "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.The goal is to add all missing facts, data, stats, main points, missing sections, missing subsections, etc."
+        f"Here is the outline to extend and improve using the corpus: {the_outline.value}"
+
+        client.beta.threads.messages.create(
+            thread_id=outline_thread_id,
+            role="user",
+            content=prompt,
+            file_ids=uploaded_file_ids
+        )
+
+        run_response = client.beta.threads.runs.create(
+            thread_id=outline_thread_id,
+            assistant_id=outline_assistant_id
+        )
+        print(f"Outline Run created with ID: {run_response.id}")
+        print(f"Created message for file ID {notes_file_id} in thread {outline_thread_id}")
+        
+        while True:
             run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
             if run_status in ['queued', 'in_progress']:
+                run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+        
                 time.sleep(5)  # Wait for 5 seconds before polling again
                 print(run_status)
                 continue
             if run_status in ['completed', 'failed']:
+                run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+
+                print(run_status)
+                print("run status outline loop")
                 break
             elif run_status == 'requires_action':
+                print(run_status)
                 break
-
-            response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-            the_outline = response.data[-1].content[0].text
-            prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}."
-            "For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]"
-            "You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline."
-            "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.The goal is to add all missing facts, data, stats, main points, missing sections, missing subsections, etc."
-            f"Here is the outline to extend and improve using the corpus: {the_outline.value}"
-
-            client.beta.threads.messages.create(
-                thread_id=outline_thread_id,
-                role="user",
-                content=prompt,
-                file_ids=uploaded_file_ids
-            )
-
-            run_response = client.beta.threads.runs.create(
-                thread_id=outline_thread_id,
-                assistant_id=outline_assistant_id
-            )
-            print(f"Outline Run created with ID: {run_response.id}")
-            print(f"Created message for file ID {notes_file_id} in thread {outline_thread_id}")
-            
-            while True:
-                run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
-                if run_status in ['queued', 'in_progress']:
-                    run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
-            
-                    time.sleep(5)  # Wait for 5 seconds before polling again
-                    print(run_status)
-                    continue
-                if run_status in ['completed', 'failed']:
-                    run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
-
-                    print(run_status)
-                    print("run status outline loop")
-                    break
-                elif run_status == 'requires_action':
-                    print(run_status)
-                    break
-            
-            # Retrieve the assistant's response
-            response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-            print(response.data)
-            outline_message_id = response.data[0].id
-            outline_message_content = response.data[0].content[0].text
-            outline_message_role= response.data[0].role
-            outline_message_file_id = response.data[0].file_ids
         
-            outline.append(outline_message_content)
-            print(outline)
-            status.text("should add to outline here")
-            status.text(outline)
-            i += 1
+        # Retrieve the assistant's response
+        response = client.beta.threads.messages.list(thread_id=outline_thread_id)
+        print(response.data)
+        outline_message_id = response.data[0].id
+        outline_message_content = response.data[0].content[0].text
+        outline_message_role= response.data[0].role
+        outline_message_file_id = response.data[0].file_ids
+    
+        outline.append(outline_message_content)
+        print(outline)
+        status.text("should add to outline here")
+        status.text(outline)
+        i += 1
 
         status.text('Finalizing outline...')
         status.text(outline)
