@@ -544,7 +544,7 @@ def main():
             mime='text/csv',
         )
 
-        st.download_button('Download Final Article', outline[-1])
+        st.download_button('Download Final Article', outline)
 
         
         # Create a zip archive
