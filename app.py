@@ -351,10 +351,9 @@ def analyze_articles(file_ids, query, status, client):
 def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
-    # Uploading articles
-
+    outline = []
     if st.button("Start Research"):
-        outline = []
+
         i = 0
         file_ids_attempt = []
         progress = st.progress(0)
