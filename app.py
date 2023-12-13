@@ -533,8 +533,13 @@ def main():
         st.text(outline)
         progress.progress(100)
         
-        with open(outline_file_path, "rb") as file:
-            st.download_button("Download All Outlines", file, file_name=aggregated_notes_file_path)
+        
+        st.download_button(
+            label="Download data as CSV",
+            data=csv,
+            file_name=aggregated_notes_file_path,
+            mime='text/csv',
+        )
 
         # File download options
         #with open(final_outline_file_path, "rb") as file:
