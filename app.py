@@ -408,9 +408,12 @@ def main():
         full_notes = back_from_analyze[2]
         status.text('Analysis completed!')
         progress.progress(60)
-
+        
+        with open(note_file_path, 'w', encoding='utf-8') as file:
+                        file.write(aggregated_notes_file_path)
+        
         # Finalizing outline
-        with open(aggregated_notes_file_path, 'rb') as f:
+        with open(note_file_path, 'rb') as f:
             try:
                 notes_file_response = client.files.create(file=f, purpose='assistants')
                 notes_file_id = notes_file_response.id
