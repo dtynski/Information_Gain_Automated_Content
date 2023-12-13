@@ -438,7 +438,7 @@ def main():
             thread_id=outline_thread_id,
             role="user",
             content=prompt,
-            file_ids=[notes_file_id]
+            file_ids=[uploaded_file_ids]
         )
 
         run_response = client.beta.threads.runs.create(
@@ -469,7 +469,7 @@ def main():
                 thread_id=outline_thread_id,
                 role="user",
                 content=prompt,
-                file_ids=[notes_file_id]
+                file_ids=[uploaded_file_ids]
             )
 
             run_response = client.beta.threads.runs.create(
