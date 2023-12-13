@@ -160,7 +160,7 @@ def sanitize_url(url):
     # Implement your URL sanitization logic here
     return url
 
-def worker(thread_id, file_id_link_tuple, query, client):
+def worker(thread_id, file_id_link_tuple, query,status,client):
     file_id, link = file_id_link_tuple
     if file_id is None:
         return None
@@ -370,7 +370,7 @@ def main():
         file_ids = [(str(file_id), link) for file_id, link in file_ids_attempt if file_id is not None and isinstance(file_id, str)]
         status.text('Analyzing articles...')
         thread_id = client.beta.threads.create().id
-        back_from_analyze = analyze_articles(thread_id, file_ids,query,status)
+        back_from_analyze = worker(thread_id, file_ids,query,status,client)
         aggregated_notes_file_path = back_from_analyze[0]
         status.text(back_from_analyze[0])
         uploaded_file_ids = back_from_analyze[1]
