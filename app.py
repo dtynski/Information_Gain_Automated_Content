@@ -500,10 +500,8 @@ def main():
             i += 1
 
         status.text('Finalizing outline...')
-        outline_file_path = "all_outlines.csv"
-        
-
-
+        status.text(outline)
+        print(f"Outline:{outline})
         def convert_df_to_csv_bytes(df):
             # Convert DataFrame to CSV and encode to bytes
             return df.to_csv(index=False).encode('utf-8')
