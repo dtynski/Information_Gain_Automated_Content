@@ -359,6 +359,7 @@ def save_bytes_to_file(bytes_data, file_name):
     # Save bytes data to a file
     with open(file_name, 'wb') as file:
         file.write(bytes_data)    
+        
 def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
@@ -409,8 +410,6 @@ def main():
         status.text('Analysis completed!')
         progress.progress(60)
         
-        aggregated_notes_dataframe = convert_df_to_csv_bytes(full_notes)
-
         try:
             notes_file_response = client.files.create(file=aggregated_notes_dataframe, purpose='assistants')
             notes_file_id = notes_file_response.id
@@ -519,6 +518,8 @@ def main():
 
                 
         df_outline = pd.DataFrame(outline)
+        st.write("Content to be added to outline:", article_message_content)
+
         
         status.text('Outline generation concluded.')
         st.text(outline)
