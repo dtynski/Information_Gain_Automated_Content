@@ -548,7 +548,7 @@ def main():
         with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
             # Save the string as a text file
             with open('Final_Outline.txt', 'w') as text_file:
-                text_file.write(article_message_content.value)
+                text_file.write(outline)
             zipf.write('Final_Outline.txt', 'Final_Outline.txt')  # Add the text file to the zip archive
             
             with open('Full_Notes.txt', 'w') as text_file:
