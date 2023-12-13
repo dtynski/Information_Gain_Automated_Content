@@ -440,15 +440,14 @@ def main():
         )
 
 
-        run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
-        if run_status in ['queued', 'in_progress']:
-            time.sleep(5)  # Wait for 5 seconds before polling again
-            print(run_status)
-            continue
-        if run_status in ['completed', 'failed']:
-            break
-        elif run_status == 'requires_action':
-            break
+        
+        while True:
+            run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+            if run_status in ['queued', 'in_progress']:
+                time.sleep(5)
+                continue
+            if run_status in ['completed', 'failed', 'requires_action']:
+                break
 
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
         the_outline = response.data[-1].content[0].text
