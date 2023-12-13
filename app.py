@@ -410,18 +410,12 @@ def main():
         status.text('Analysis completed!')
         progress.progress(60)
         
-        try:
-            notes_file_response = client.files.create(file=aggregated_notes_dataframe, purpose='assistants')
-            notes_file_id = notes_file_response.id
-        except Exception as e:
-            st.error(f"Failed to upload file: {e}")
-            return
 
         outline_assistant_id = client.beta.assistants.create(
             instructions=f"Please simulate an expert on writing comprehensive long-form article outlines on the topic of {query}."
             "As a superhuman AI, you do this job better than any human in terms of information gain."
             "Based on the files provided in the reference corpuses, please improve, expand and extend the article outline with each new round."
-            f"The reference files have the following file ids: {notes_file_id}. You DO have access to these files, even if you assume you dont."
+            f"The reference files have the following file ids: {uploaded_file_ids}. You DO have access to these files, even if you assume you dont."
             "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.Write at least 6000 words."
             "Write your extremely detailed outline in markdown with deep hierarchies."
             "The outline should include all unique information found in the corpus, highly organized, retaining all salient facts. The primary goal of this outline is maximum information density.6,000 word MINIMUM."
@@ -458,7 +452,7 @@ def main():
 
             response = client.beta.threads.messages.list(thread_id=outline_thread_id)
             the_outline = response.data[-1].content[0].text
-            prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {notes_file_id} for the goal of the query: {query}."
+            prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}."
             "For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]"
             "You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline."
             "Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.The goal is to add all missing facts, data, stats, main points, missing sections, missing subsections, etc."
