@@ -14,6 +14,8 @@ from urllib.parse import urlparse
 from newspaper import Article
 import re
 import streamlit as st
+import zipfile
+
 
 # Securely load API keys
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
@@ -537,13 +539,34 @@ def main():
         all_outlines_csv = convert_df(df_outline)
         st.download_button(
             label="Download All Outlines",
-            data=all_outlines,
+            data=all_outlines_csv,
             file_name=aggregated_notes_file_path,
             mime='text/csv',
         )
 
         st.download_button('Download Final Article', outline[-1])
 
+        
+        # Create a zip archive
+        with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # Save the string as a text file
+            with open('Final_Outline.txt', 'w') as text_file:
+                text_file.write(outline[-1])
+            zipf.write('Final_Outline.txt', 'Final_Outline.txt')  # Add the text file to the zip archive
+        
+            # Save the DataFrame as a CSV file
+            all_outlines_csv.to_csv('all_outlines.csv', index=False)
+            zipf.write('all_outlines.csv', 'all_outlines.csv')  # Add the CSV file to the zip archive
+        
+        print('Successfully created All_Results.zip')
+
+        with open("All_Results.zip", "rb") as fp:
+            btn = st.download_button(
+                label="Download ZIP",
+                data=fp,
+                file_name="All_Results.zip",
+                mime="application/zip"
+            )
 
 
     
