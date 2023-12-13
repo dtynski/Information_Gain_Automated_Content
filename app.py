@@ -346,23 +346,25 @@ def analyze_articles(file_ids, query, status, client):
 
     return df_notes, individual_file_ids, df_notes
     
+def convert_df_to_csv_bytes(df):
+# Convert DataFrame to CSV and encode to bytes
+return df.to_csv(index=False).encode('utf-8')
+
+def save_string_to_file(string_data, file_name):
+    # Save a string to a file
+    with open(file_name, 'w') as file:
+        file.write(string_data)
+
+def save_bytes_to_file(bytes_data, file_name):
+    # Save bytes data to a file
+    with open(file_name, 'wb') as file:
+        file.write(bytes_data)    
 def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     outline = []
-    def convert_df_to_csv_bytes(df):
-    # Convert DataFrame to CSV and encode to bytes
-    return df.to_csv(index=False).encode('utf-8')
-
-    def save_string_to_file(string_data, file_name):
-        # Save a string to a file
-        with open(file_name, 'w') as file:
-            file.write(string_data)
     
-    def save_bytes_to_file(bytes_data, file_name):
-        # Save bytes data to a file
-        with open(file_name, 'wb') as file:
-            file.write(bytes_data)
+
             
     if st.button("Start Research"):
 
