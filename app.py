@@ -160,13 +160,13 @@ def sanitize_url(url):
     # Implement your URL sanitization logic here
     return url
 
-def worker(thread_id, file_id_link_tuple, query,status,client):
+def worker(file_id_link_tuple, query,status,client):
     file_id, link = file_id_link_tuple
     if file_id is None:
         return None
 
     sanitized_link = sanitize_url(link)
-
+    
     # Create an Assistant with retrieval for analyzing articles
     assistant_id = client.beta.assistants.create(
             instructions=f"""You are an all-knowing expert AI researcher information extractor. You are compiling as much useful information and as many facts as you can for an article you are writing about {query}
@@ -274,7 +274,7 @@ def worker(thread_id, file_id_link_tuple, query,status,client):
             model="gpt-3.5-turbo-1106",
             tools=[{"type": "retrieval"}]
         ).id
-
+    thread_id = client.beta.threads.create().id
     client.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
@@ -388,8 +388,7 @@ def main():
         # Analyzing articles
         file_ids = [(str(file_id), link) for file_id, link in file_ids_attempt if file_id is not None and isinstance(file_id, str)]
         status.text('Analyzing articles...')
-        thread_id = client.beta.threads.create().id
-        back_from_analyze = analyze_articles(thread_id, file_ids,query,status,client)
+        back_from_analyze = analyze_articles(file_ids,query,status,client)
         aggregated_notes_file_path = back_from_analyze[0]
         status.text(back_from_analyze[0])
         uploaded_file_ids = back_from_analyze[1]
