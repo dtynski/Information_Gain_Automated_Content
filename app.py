@@ -346,7 +346,7 @@ def analyze_articles(thread_id, file_ids,query,status):
 
 
 
-    return notes_file_path, individual_file_ids, individual_outline_file_path
+    return notes_file_path, individual_file_ids, df_notes
 
 
 import streamlit as st
@@ -402,6 +402,7 @@ def main():
         aggregated_notes_file_path = back_from_analyze[0]
         status.text(back_from_analyze[0])
         uploaded_file_ids = back_from_analyze[1]
+        full_notes = back_from_analyze[2]
         status.text('Analysis completed!')
         progress.progress(60)
 
@@ -533,7 +534,12 @@ def main():
         st.text(outline)
         progress.progress(100)
         
+        @st.cache
+        def convert_df(df):
+            # IMPORTANT: Cache the conversion to prevent computation on every rerun
+            return df.to_csv().encode('utf-8')
         
+        csv = convert_df(full_notes)
         st.download_button(
             label="Download data as CSV",
             data=csv,
