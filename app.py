@@ -493,14 +493,12 @@ def main():
             # Retrieve the assistant's response
             response = client.beta.threads.messages.list(thread_id=outline_thread_id)
             print(response.data)
-            article_message_id = response.data[0].id
-            article_message_content = response.data[0].content[0].text
-            article_message_role= response.data[0].role
-            article_message_file_id = response.data[0].file_ids
+            outline_message_id = response.data[0].id
+            outline_message_content = response.data[0].content[0].text
+            outline_message_role= response.data[0].role
+            outline_message_file_id = response.data[0].file_ids
         
-           
-            #message_citations = get_citations(response)
-            outline.append(article_message_content)
+            outline.append(outline_message_content)
             print(outline)
             status.text("should add to outline here")
             status.text(outline)
