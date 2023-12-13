@@ -410,16 +410,14 @@ def main():
         progress.progress(60)
         
         aggregated_notes_dataframe = convert_df_to_csv_bytes(full_notes)
-        
-        # Finalizing outline
-        with open(aggregated_notes_dataframe, 'rb') as f:
-            try:
-                notes_file_response = client.files.create(file=f, purpose='assistants')
-                notes_file_id = notes_file_response.id
-                st.text(f)
-            except Exception as e:
-                st.error(f"Failed to upload file: {e}")
-                return
+
+        try:
+            notes_file_response = client.files.create(file=aggregated_notes_dataframe, purpose='assistants')
+            notes_file_id = notes_file_response.id
+            st.text(f)
+        except Exception as e:
+            st.error(f"Failed to upload file: {e}")
+            return
 
         outline_assistant_id = client.beta.assistants.create(
             instructions=f"Please simulate an expert on writing comprehensive long-form article outlines on the topic of {query}."
