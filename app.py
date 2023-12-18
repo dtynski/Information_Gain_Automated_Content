@@ -391,7 +391,7 @@ def query_assistant(prompt):
         ],
         max_tokens=4000
     )
-    print(response.choices[0].message.content)
+    #print(response.choices[0].message.content)
     return response.choices[0].message.content
 
 
@@ -537,14 +537,14 @@ def main():
         outline_message_file_id = response.data[0].file_ids
     
         outline.append(outline_message_content)
-        print(outline)
+        #print(outline)
         #status.text("should add to outline here")
         #status.text(outline)
         i += 1
 
         status.text('Finalizing outline...')
         #status.text(outline)
-        print(f"Outline:{outline}")
+        #print(f"Outline:{outline}")
 
                 
         df_outline = pd.DataFrame(outline)
@@ -570,7 +570,7 @@ def main():
         
         final_article.append(query_gpt)
         
-        while "Article Complete" not in query_gpt:
+        while "Article Complete" not in final_article:
           conversation.append(query_gpt)
           keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections"
           conversation.append(keep_going)
@@ -894,7 +894,7 @@ def main():
         gpt_json = response.choices[0].message.content
         result = re.sub(r'\btrue\b|\bfalse\b', replace_bool, gpt_json)
         
-        print(result)
+        #print(result)
         json_object = json.loads(response.choices[0].message.content)
 
 
@@ -922,7 +922,7 @@ def main():
         
             try:
                 response = requests.post(endpoint, json=form_data, headers=headers)
-                print(response.content)
+                #print(response.content)
                 response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
                 return response.json()
             except requests.RequestException as e:
@@ -937,8 +937,8 @@ def main():
         progress.progress(100)
         st.markdown(final_article)
         if created_form:
-            st.write(json.dumps(created_form, indent=4))
-
+            survey_form = json.dumps(created_form, indent=4))
+            st.write(survey_form['_links'])
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
                 label="Download ZIP",
