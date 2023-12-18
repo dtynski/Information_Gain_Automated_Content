@@ -395,7 +395,7 @@ def query_assistant(prompt):
 
 
 def main():
-    st.title("Research and Outline Generation Tool")
+    st.title("Automated Content Creation Pipeline - Information Gain")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     outline = []
     final_article = []
@@ -527,7 +527,7 @@ def main():
         
         # Retrieve the assistant's response
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-        print(response.data)
+        #print(response.data)
         outline_message_id = response.data[0].id
         outline_message_content = response.data[0].content[0].text
         outline_message_role= response.data[0].role
@@ -535,22 +535,22 @@ def main():
     
         outline.append(outline_message_content)
         print(outline)
-        status.text("should add to outline here")
-        status.text(outline)
+        #status.text("should add to outline here")
+        #status.text(outline)
         i += 1
 
         status.text('Finalizing outline...')
-        status.text(outline)
+        #status.text(outline)
         print(f"Outline:{outline}")
 
                 
         df_outline = pd.DataFrame(outline)
-        st.write("Content to be added to outline:", outline_message_content)
+        #st.write("Content to be added to outline:", outline_message_content)
 
         
         status.text('Outline generation concluded.')
-        st.text(outline)
-        progress.progress(100)
+        #st.text(outline)
+        progress.progress(80)
         
         # Convert DataFrames to CSV bytes
         aggregate_notes_csv_bytes = convert_df_to_csv_bytes(full_notes)
@@ -612,8 +612,11 @@ def main():
             zipf.write(all_outlines_file_name, all_outlines_file_name)
         
         print('Successfully created All_Results.zip')
-        st.markdown(final_article)
         
+        status.text('Final Article Complete.')
+
+        progress.progress(100)
+        st.markdown(final_article)
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
                 label="Download ZIP",
