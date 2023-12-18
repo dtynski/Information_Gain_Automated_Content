@@ -498,7 +498,7 @@ def main():
                 break
 
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-        the_outline = response.data[-1].content[0].text
+        the_outline = response.data[0].content[0].text
         st.write(response.data)
         st.write(the_outline)
         prompt = f"""Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}.
