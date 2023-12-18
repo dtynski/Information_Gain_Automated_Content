@@ -555,25 +555,6 @@ def main():
         # Convert DataFrames to CSV bytes
         aggregate_notes_csv_bytes = convert_df_to_csv_bytes(full_notes)
         all_outlines_csv_bytes = convert_df_to_csv_bytes(df_outline)
-        
-        # Create a zip archive
-        with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # Save the outline string as a text file and add to the zip archive
-            outline_file_name = 'Final_Outline.txt'
-            save_string_to_file(str(outline), outline_file_name)
-            zipf.write(outline_file_name, outline_file_name)
-        
-            # Save the full notes as a CSV file and add to the zip archive
-            full_notes_file_name = 'Full_Notes.csv'
-            save_bytes_to_file(aggregate_notes_csv_bytes, full_notes_file_name)
-            zipf.write(full_notes_file_name, full_notes_file_name)
-        
-            # Save the all outlines as a CSV file and add to the zip archive
-            all_outlines_file_name = 'All_Outlines.csv'
-            save_bytes_to_file(all_outlines_csv_bytes, all_outlines_file_name)
-            zipf.write(all_outlines_file_name, all_outlines_file_name)
-        
-        print('Successfully created All_Results.zip')
 
         outline = str(outline)
         notes = full_notes
@@ -606,8 +587,33 @@ def main():
         final_article = remove_sections_within_brackets(final_article)
         
         
-        st.write(final_article)
+        
 
+        # Create a zip archive
+        with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # Save the outline string as a text file and add to the zip archive
+            outline_file_name = 'Final_Outline.txt'
+            save_string_to_file(str(outline), outline_file_name)
+            zipf.write(outline_file_name, outline_file_name)
+
+            # Save the final article
+            final_article_file_name = 'Final_Article.txt'
+            save_string_to_file(str(final_article), final_article_file_name)
+            zipf.write(final_article_file_name, final_article_file_name)
+        
+            # Save the full notes as a CSV file and add to the zip archive
+            full_notes_file_name = 'Full_Notes.csv'
+            save_bytes_to_file(aggregate_notes_csv_bytes, full_notes_file_name)
+            zipf.write(full_notes_file_name, full_notes_file_name)
+        
+            # Save the all outlines as a CSV file and add to the zip archive
+            all_outlines_file_name = 'All_Outlines.csv'
+            save_bytes_to_file(all_outlines_csv_bytes, all_outlines_file_name)
+            zipf.write(all_outlines_file_name, all_outlines_file_name)
+        
+        print('Successfully created All_Results.zip')
+        st.markdown(final_article)
+        
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
                 label="Download ZIP",
@@ -618,7 +624,7 @@ def main():
 
 
     
-        st.success("Research and outline generation completed successfully.")
+        st.success("Research, outline, and final article generation completed successfully.")
 
 if __name__ == "__main__":
     main()
