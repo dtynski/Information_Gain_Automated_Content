@@ -18,7 +18,13 @@ import zipfile
 import concurrent.futures
 import concurrent.futures
 
-
+# Securely load API keys
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+SERP_API_KEY = st.secrets["SERP_API_KEY"]
+# Define your Typeform API token and endpoint
+api_token =  st.secrets["api_token"]
+# Initialize OpenAI client
+client = openai.Client(api_key=OPENAI_API_KEY)
 
 def get_citations(article_response):
     article_message_id = article_response.data[0].id
@@ -390,12 +396,7 @@ def query_assistant(prompt):
 
 
 def main():
-    # Securely load API keys
-    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-    SERP_API_KEY = st.secrets["SERP_API_KEY"]
-    
-    # Initialize OpenAI client
-    client = openai.Client(api_key=OPENAI_API_KEY)
+
     st.title("Automated Content Creation Pipeline - Information Gain")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     outline = []
@@ -619,11 +620,7 @@ def main():
 
 
         corpus= full_notes
-        
-        OPENAI_API_KEY = "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"
-        client = openai.Client(api_key=OPENAI_API_KEY)
-        
-        
+                
         response = client.chat.completions.create(
           model="gpt-3.5-turbo-1106",
           messages=[
@@ -901,8 +898,7 @@ def main():
 
 
 
-        # Define your Typeform API token and endpoint
-        st.secrets["api_token"]
+
         endpoint = 'https://api.typeform.com/forms'
     
         
