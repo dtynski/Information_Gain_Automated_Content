@@ -23,6 +23,7 @@ OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 SERP_API_KEY = st.secrets["SERP_API_KEY"]
 # Define your Typeform API token and endpoint
 api_token =  st.secrets["TYPEFORM_API_KEY"]
+
 # Initialize OpenAI client
 client = openai.Client(api_key=OPENAI_API_KEY)
 
@@ -561,7 +562,7 @@ def main():
         outline = str(outline)
         notes = full_notes
 
-        prompt = f"""Please iteratively write a long-form article based on the first draft and enhanced by the information you find in the notes corpus. You include everything in the outline, including the top level sections, subsections, and sub-subsections. Start with a table of contents that mirrors exactly what you see in the outline with all sections/subsections/subsubsections included. Enhance if needed. It should have many sections, subsections, and subsubsections. Then go section by section. While following the outline, draw extensively on your notes corpus. The notes contains many sections, each related to a specific source. The sections of notes on individual sources are seperated by file-Gcjd8AsDYc1zhct03uHXyoqo filenames like that.  When citing a source, always reference a specific url from the notes corpus. The citation should be inline and use the format: [URL Title from the notes,URL from the notes always starting with http or https]. After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
+        prompt = f"""Please iteratively write a long-form article based on the first draft and enhanced by the information you find in the notes corpus. You include everything in the outline, including the top level sections, subsections, and sub-subsections. Start with a table of contents (only included in first iteration) that mirrors exactly what you see in the outline with all sections/subsections/subsubsections included. Enhance if needed. It should have many sections, subsections, and subsubsections. Then go section by section, the table of contents should only be returned once. While following the outline, draw extensively on your notes corpus. The notes contains many sections, each related to a specific source. The sections of notes on individual sources are seperated by file-Gcjd8AsDYc1zhct03uHXyoqo filenames like that.  When citing a source, always reference a specific url from the notes corpus. The citation should be inline and use the format: [URL Title from the notes,URL from the notes always starting with http or https]. After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
         Here is the outline you will follow: #### {outline} ####. Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. Notes: #### {notes} #### .You never write generically or with generalizations, you always attempt to use specific facts, data, etc. You also like to include markdown tables. Make sure to cite your sources inline. Each section is at least 2000 words. You write in beautiful markdown and always cite your sources from http or https urls found in your notes corpus. Leverage your notes to the fullest extent possible. At the beginning of each seciton, make a detailed recommendation for an image to include. This image should be a simplistic representation of the given section. It should NEVER include text or be super complex. The image description should be very specific to help a generative AI render it accurately. Provide these instructions like this: [Insert Image Here: The Image Description] . Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. Each section will likely have a table or other structured markdown viz. Be extremely thorough and comprehensive with a focus on making the article as useful and actionable as possible. When referencing a url, do it inline and use [URL Title from the notes,URL from the notes always starting with http or https]. Never cite references like this [[1†source]]. Always use the actual http or https url. Try to use as many different sources as possible in your article. Because the notes are so extensive, you should be referencing sources, all sources should be referenced by the end of the article."""
         
         conversation.append(str(prompt))
@@ -931,12 +932,13 @@ def main():
         
         
         created_form = create_form(api_token, json_object)
-        if created_form:
-            st.write(json.dumps(created_form, indent=4))
-
+        
         
         progress.progress(100)
         st.markdown(final_article)
+        if created_form:
+            st.write(json.dumps(created_form, indent=4))
+
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
                 label="Download ZIP",
