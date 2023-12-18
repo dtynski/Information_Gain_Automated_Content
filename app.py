@@ -937,7 +937,7 @@ def main():
         progress.progress(100)
         st.markdown(final_article)
         if created_form:
-            survey_form = json.dumps(created_form, indent=4))
+            survey_form = json.dumps(created_form, indent=4)
             st.write(survey_form['_links'])
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
