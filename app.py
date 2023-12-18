@@ -572,7 +572,7 @@ def main():
         
         final_article.append(query_gpt)
         
-        while "Article Complete" not in final_article:
+        while "Article Complete" not in query_gpt:
           conversation.append(query_gpt)
           keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections"
           conversation.append(keep_going)
