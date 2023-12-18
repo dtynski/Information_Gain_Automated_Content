@@ -22,7 +22,7 @@ import concurrent.futures
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 SERP_API_KEY = st.secrets["SERP_API_KEY"]
 # Define your Typeform API token and endpoint
-api_token =  st.secrets["api_token"]
+api_token =  st.secrets["TYPEFORM_API_KEY"]
 # Initialize OpenAI client
 client = openai.Client(api_key=OPENAI_API_KEY)
 
