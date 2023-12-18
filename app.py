@@ -500,7 +500,7 @@ def main():
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
         the_outline = response.data[0].content[0].text
         st.write(response.data)
-        st.write(the_outline)
+        st.write(the_outline.value)
         prompt = f"""Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}.
         For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]
         You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline.
