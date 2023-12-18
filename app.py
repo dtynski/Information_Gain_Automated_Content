@@ -18,12 +18,7 @@ import zipfile
 import concurrent.futures
 import concurrent.futures
 
-# Securely load API keys
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
-SERP_API_KEY = st.secrets["SERP_API_KEY"]
 
-# Initialize OpenAI client
-client = openai.Client(api_key=OPENAI_API_KEY)
 
 def get_citations(article_response):
     article_message_id = article_response.data[0].id
@@ -395,6 +390,12 @@ def query_assistant(prompt):
 
 
 def main():
+    # Securely load API keys
+    OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+    SERP_API_KEY = st.secrets["SERP_API_KEY"]
+    
+    # Initialize OpenAI client
+    client = openai.Client(api_key=OPENAI_API_KEY)
     st.title("Automated Content Creation Pipeline - Information Gain")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     outline = []
