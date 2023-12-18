@@ -16,7 +16,7 @@ import re
 import streamlit as st
 import zipfile
 import concurrent.futures
-
+import concurrent.futures
 
 # Securely load API keys
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
@@ -149,12 +149,6 @@ def sanitize_url(url):
     """Sanitize the URL to make it suitable for use in a filename."""
     sanitized = re.sub(r'[^\w\-_\. ]', '_', url)  # Replace non-alphanumeric characters with '_'
     return sanitized
-
-
-
-import concurrent.futures
-import time
-import pandas as pd
 
 def sanitize_url(url):
     # Implement your URL sanitization logic here
@@ -359,11 +353,53 @@ def save_bytes_to_file(bytes_data, file_name):
     # Save bytes data to a file
     with open(file_name, 'wb') as file:
         file.write(bytes_data)    
-        
+
+def fix_markdown(text):
+    # Replace \\n with proper line breaks (\n)
+    text = re.sub(r'\\n', '\n', text)
+
+    # Remove extra newlines at the beginning and end of paragraphs
+    text = re.sub(r'\n\n+', '\n\n', text)
+
+    # Split sections using ", " and format them
+    sections = re.split(r'", "', text)
+    formatted_sections = []
+    for section in sections:
+        formatted_section = re.sub(r'\n\n', '\n', section.strip())
+        formatted_sections.append(formatted_section)
+
+    return '\n\n'.join(formatted_sections)
+
+
+def remove_sections_within_brackets(text):
+    # Define a regular expression pattern to match text within square brackets
+    pattern = r'\[Next Section to Write:[^\]]+\]'
+
+    # Use re.sub to replace all matches with an empty string
+    cleaned_text = re.sub(pattern, '', text)
+
+    return cleaned_text
+
+def query_assistant(prompt):
+    response = client.chat.completions.create(
+        model="gpt-4-1106-preview",
+        messages=[
+        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes."},
+        {"role": "user", "content": prompt}
+        ],
+        max_tokens=4000
+    )
+    print(response.choices[0].message.content)
+    return response.choices[0].message.content
+
+
+
 def main():
     st.title("Research and Outline Generation Tool")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     outline = []
+    final_article = []
+    conversation = []
     i = 0
 
             
@@ -539,6 +575,38 @@ def main():
         
         print('Successfully created All_Results.zip')
 
+        outline = str(outline)
+        notes = full_notes
+
+        prompt = f"""Please iteratively write a long-form article based on the first draft and enhanced by the information you find in the notes corpus. You include everything in the outline, including the top level sections, subsections, and sub-subsections. Start with a table of contents that mirrors exactly what you see in the outline with all sections/subsections/subsubsections included. Enhance if needed. It should have many sections, subsections, and subsubsections. Then go section by section. While following the outline, draw extensively on your notes corpus. The notes contains many sections, each related to a specific source. The sections of notes on individual sources are seperated by file-Gcjd8AsDYc1zhct03uHXyoqo filenames like that.  When citing a source, always reference a specific url from the notes corpus. The citation should be inline and use the format: [URL Title from the notes,URL from the notes always starting with http or https]. After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
+        Here is the outline you will follow: #### {outline} ####. Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. Notes: #### {notes} #### .You never write generically or with generalizations, you always attempt to use specific facts, data, etc. You also like to include markdown tables. Make sure to cite your sources inline. Each section is at least 2000 words. You write in beautiful markdown and always cite your sources from http or https urls found in your notes corpus. Leverage your notes to the fullest extent possible. At the beginning of each seciton, make a detailed recommendation for an image to include. This image should be a simplistic representation of the given section. It should NEVER include text or be super complex. The image description should be very specific to help a generative AI render it accurately. Provide these instructions like this: [Insert Image Here: The Image Description] . Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. Each section will likely have a table or other structured markdown viz. Be extremely thorough and comprehensive with a focus on making the article as useful and actionable as possible. When referencing a url, do it inline and use [URL Title from the notes,URL from the notes always starting with http or https]. Never cite references like this [[1†source]]. Always use the actual http or https url. Try to use as many different sources as possible in your article. Because the notes are so extensive, you should be referencing sources, all sources should be referenced by the end of the article."""
+        
+        conversation.append(str(prompt))
+        query_gpt = query_assistant(prompt)
+        
+        final_article.append(query_gpt)
+        
+        while "Article Complete" not in query_gpt:
+          conversation.append(query_gpt)
+          keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections"
+          conversation.append(keep_going)
+          query_gpt = query_assistant(str(conversation))
+          final_article.append(query_gpt)
+          #print(f"GPT Response:{query_gpt}")
+        
+        if "Bibliography Complete" not in query_gpt:
+          conversation.append(query_gpt)
+          add_bibliography = "Now please add a nicely formatted markdown bibliography at the end. The Bibliography should refrence the http or https links as they appear in the notes corpus that are referenced in the article. Once the bibliography is done, return the string - Bibliography Complete -"
+          conversation.append(add_bibliography)
+          query_gpt = query_assistant(str(conversation))
+        
+          final_article.append(query_gpt)
+        final_article = " ".join(final_article)
+        final_article =  fix_markdown(final_article)
+        final_article = remove_sections_within_brackets(final_article)
+        
+        
+        st.write(final_article)
 
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
@@ -554,3 +622,13 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
