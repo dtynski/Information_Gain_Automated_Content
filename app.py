@@ -479,16 +479,25 @@ def main():
 
 
         
-        while True:
+        run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+        if run_status in ['queued', 'in_progress']:
             run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
-            if run_status in ['queued', 'in_progress']:
-                time.sleep(5)
-                continue
-            if run_status in ['completed', 'failed', 'requires_action']:
-                break
+    
+            time.sleep(5)  # Wait for 5 seconds before polling again
+            print(run_status)
+            continue
+        if run_status in ['completed', 'failed']:
+            run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
+    
+            print(run_status)
+            print("run status outline loop")
+            break
+        elif run_status == 'requires_action':
+            print(run_status)
+            break
 
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-        the_outline = response.data[0].content[0].text
+        the_outline = response.data[-1].content[0].text
         prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}."
         "For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]"
         "You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline."
