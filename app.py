@@ -32,14 +32,14 @@ def get_citations(article_response):
     article_message_content = article_response.data[0].content[0].text
     article_message_role= article_response.data[0].role
     article_message_file_id = article_response.data[0].file_ids
-    print(f"Article Message Id: {article_message_id}")
-    print(f"Article Message Content: {article_message_content}")
-    print(f"Article Message Role: {article_message_role}")
-    print(f"Article Message File Id: {article_response.data[0].file_ids}")
+    #print(f"Article Message Id: {article_message_id}")
+    #print(f"Article Message Content: {article_message_content}")
+    #print(f"Article Message Role: {article_message_role}")
+    #print(f"Article Message File Id: {article_response.data[0].file_ids}")
     annotations = article_message_content.annotations
-    print(annotations)
+    #print(annotations)
     citations = []
-    print(f"File ID in Citation:{article_message_file_id}")
+    #print(f"File ID in Citation:{article_message_file_id}")
 
     # Iterate over the annotations and add footnotes
     for index, annotation in enumerate(annotations):
@@ -391,7 +391,6 @@ def query_assistant(prompt):
         ],
         max_tokens=4000
     )
-    #print(response.choices[0].message.content)
     return response.choices[0].message.content
 
 
@@ -489,7 +488,7 @@ def main():
                 break
 
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-        the_outline = response.data[-1].content[0].text
+        the_outline = response.data[0].content[0].text
         prompt = f"Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}."
         "For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]"
         "You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline."
@@ -530,29 +529,20 @@ def main():
         
         # Retrieve the assistant's response
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
-        #print(response.data)
         outline_message_id = response.data[0].id
         outline_message_content = response.data[0].content[0].text
         outline_message_role= response.data[0].role
         outline_message_file_id = response.data[0].file_ids
     
         outline.append(outline_message_content)
-        #print(outline)
-        #status.text("should add to outline here")
-        #status.text(outline)
+
         i += 1
 
         status.text('Finalizing outline...')
-        #status.text(outline)
-        #print(f"Outline:{outline}")
-
-                
         df_outline = pd.DataFrame(outline)
-        #st.write("Content to be added to outline:", outline_message_content)
 
         
         status.text('Outline generation concluded. Now Writing Full Article.')
-        #st.text(outline)
         progress.progress(80)
         
         # Convert DataFrames to CSV bytes
@@ -879,7 +869,7 @@ def main():
               response_format={ "type": "json_object" }
         )
         
-        print(response.choices[0].message.content)
+        #print(response.choices[0].message.content)
 
 
         import re
