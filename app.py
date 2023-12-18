@@ -314,7 +314,7 @@ def worker(file_id_link_tuple, query,status,client):
 
         if word_count >= 300:
             note_file_path = f'final_outline_{sanitized_link}.txt'
-            with open(note_file_path, 'w', encoding='utf-8') as file:
+            with open(note_file_path, 'w', encoding='utf-8') as file: 
                 file.write(article_message_content)
 
             with open(note_file_path, 'rb') as file:
