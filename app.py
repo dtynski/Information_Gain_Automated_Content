@@ -440,7 +440,7 @@ def main():
         status.text('Analyzing articles...')
         back_from_analyze = analyze_articles(file_ids,query,status,client)
         aggregated_notes_file_path = back_from_analyze[0]
-        status.text(back_from_analyze[0])
+        #status.text(back_from_analyze[0])
         uploaded_file_ids = back_from_analyze[1]
         full_notes = back_from_analyze[2]
         status.text('Analysis completed!')
@@ -548,7 +548,7 @@ def main():
         #st.write("Content to be added to outline:", outline_message_content)
 
         
-        status.text('Outline generation concluded.')
+        status.text('Outline generation concluded. Now Writing Full Article.')
         #st.text(outline)
         progress.progress(80)
         
@@ -611,10 +611,333 @@ def main():
             save_bytes_to_file(all_outlines_csv_bytes, all_outlines_file_name)
             zipf.write(all_outlines_file_name, all_outlines_file_name)
         
-        print('Successfully created All_Results.zip')
         
-        status.text('Final Article Complete.')
+        
+        status.text('Final Article Complete. Now Creating the Survey.')
 
+
+
+        corpus= full_notes
+        
+        OPENAI_API_KEY = "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"
+        client = openai.Client(api_key=OPENAI_API_KEY)
+        
+        
+        response = client.chat.completions.create(
+          model="gpt-3.5-turbo-1106",
+          messages=[
+                {"role": "system", "content": f"You are an expert survey writer writing a survey based on an article. Create AT LEAST 20 survey questions and their possible resonses to choose, including a few open ended response options. You create this as json only. Here is the corpus: {corpus}"},
+                {"role": "user", "content": """Return only valid Typeforms api request json. Use conditional logic where appropriate to improve or enhance the survey quality, consistency, or flow.
+                You will always have conditional logic, so your json needs to have a logic section. Never create questions or logic with images.
+                Here is the info you need to know to create an accurate json for Typeforms api.
+        
+        
+        Here is an example of a valid json request that uses conditional logic to help you make sure you are adhering to the proper syntax and schema. Pay special attention to syntax, exact schema and capitalization. All createItems must have a location and details:
+        
+        ####{
+            "title": "Fly Fishing in Colorado Survey",
+            "settings": {
+                "language": "en",
+                "progress_bar": "proportion",
+                "meta": { "allow_indexing": False },
+                "hide_navigation": False,
+                "is_public": False,
+                "is_trial": False,
+                "show_progress_bar": True,
+                "show_typeform_branding": True,
+                "are_uploads_public": False,
+                "show_time_to_complete": True,
+                "show_number_of_submissions": False,
+                "show_cookie_consent": False,
+                "show_question_number": True,
+                "show_key_hint_on_choices": True,
+                "autosave_progress": True,
+                "free_form_navigation": False,
+                "use_lead_qualification": False,
+                "pro_subdomain_enabled": False
+            },
+            "welcome_screens": [
+                {
+                    "title": "Welcome to the Fly Fishing in Colorado Survey!",
+                    "properties": {
+                        "show_button": True,
+                        "button_text": "Start"
+                    }
+                }
+            ],
+            "fields": [
+                {
+                    "title": "What is your email address?",
+                    "ref": "email_address",
+                    "type": "email",
+                    "validations": { "required": False }
+                },
+                {
+                    "title": "How often do you go fly fishing in Colorado?",
+                    "ref": "fishing_frequency",
+                    "type": "multiple_choice",
+                    "properties": {
+                        "choices": [
+                            { "label": "Less than once a year" },
+                            { "label": "Once a year" },
+                            { "label": "2-3 times a year" },
+                            { "label": "4-6 times a year" },
+                            { "label": "More than 6 times a year" }
+                        ]
+                    },
+                    "validations": { "required": False }
+                },
+                {
+                    "title": "Do you own your fishing equipment?",
+                    "ref": "own_equipment",
+                    "type": "yes_no",
+                    "validations": { "required": True }
+                },
+                {
+                    "title": "What type of fish do you primarily target?",
+                    "ref": "fish_target",
+                    "type": "multiple_choice",
+                    "properties": {
+                        "choices": [
+                            { "label": "Trout" },
+                            { "label": "Salmon" },
+                            { "label": "Bass" },
+                            { "label": "Other" }
+                        ]
+                    },
+                    "validations": { "required": True }
+                },
+                {
+                    "title": "Describe your most memorable fishing experience.",
+                    "ref": "fishing_experience",
+                    "type": "long_text",
+                    "validations": { "required": False }
+                },
+                {
+                    "title": "Select your preferred fishing locations in Colorado.",
+                    "ref": "fishing_locations",
+                    "type": "multiple_choice",
+                    "properties": {
+                        "choices": [
+                            {
+                                "label": "Location A",
+        
+                            },
+                            {
+                                "label": "Location B",
+        
+                            }
+                        ],
+                        "allow_multiple_selection": True
+                    },
+                    "validations": { "required": True }
+                },
+                {
+                    "title": "On a scale of 1 to 10, how would you rate your fishing skills?",
+                    "ref": "fishing_skills",
+                    "type": "opinion_scale",
+                    "properties": {
+                        "steps": 10,
+                        "start_at_one": True
+                    },
+                    "validations": { "required": True }
+                },
+                {
+                    "title": "Would you be interested in participating in a fishing tournament?",
+                    "ref": "interest_tournament",
+                    "type": "yes_no",
+                    "validations": { "required": True }
+                },
+            ],
+            "thankyou_screens": [
+            {
+                "title": "Thank you for your responses!",
+                "ref": "end_of_survey",
+                "properties": {
+                    "show_button": False,
+                    "share_icons": False
+                }
+            }
+            ],
+            "logic": [
+                {
+                    "type": "field",
+                    "ref": "email_address",
+                    "actions": [
+                        {
+                            "action": "jump",
+                            "details": {
+                                "to": {
+                                    "type": "field",
+                                    "value": "fishing_frequency"
+                                }
+                            },
+                            "condition": {
+                                "op": "always",
+                                "vars": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "field",
+                    "ref": "fishing_frequency",
+                    "actions": [
+                        {
+                            "action": "jump",
+                            "details": {
+                                "to": {
+                                    "type": "field",
+                                    "value": "own_equipment"
+                                }
+                            },
+                            "condition": {
+                                "op": "always",
+                                "vars": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "field",
+                    "ref": "own_equipment",
+                    "actions": [
+                        {
+                            "action": "jump",
+                            "details": {
+                                "to": {
+                                    "type": "field",
+                                    "value": "fish_target"
+                                }
+                            },
+                            "condition": {
+                                "op": "is",
+                                "vars": [
+                                    {
+                                        "type": "field",
+                                        "value": "own_equipment"
+                                    },
+                                    {
+                                        "type": "constant",
+                                        "value": True
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "action": "jump",
+                            "details": {
+                                "to": {
+                                    "type": "field",
+                                    "value": "fishing_experience"
+                                }
+                            },
+                            "condition": {
+                                "op": "is_not",
+                                "vars": [
+                                    {
+                                        "type": "field",
+                                        "value": "own_equipment"
+                                    },
+                                    {
+                                        "type": "constant",
+                                        "value": True
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+        
+            ]
+        
+        
+        }
+        
+        ####
+        
+        Before providing your json answer, check the following:
+        
+        Check the Supported Operations and Variable Types: Ensure the operations (op) used in your logic are supported by the system.
+        For example, if you are comparing a field that returns a boolean (Yes/No), use operations like is or is_not, and ensure that the constant value you compare with is also a boolean (true or false).
+        
+        Ensure Correct Data Types: Make sure the types of the constants (constant) in your conditions match the type of data that the field returns.
+        
+        Correct Structure of Logic Conditions: The vars array should have the correct structure and number of items as per the operation's requirements.
+        
+        Similarly, check and update other conditions in your logic section following the same principles. Make sure that the operations and the types of values in your conditions are compatible with each other and with the field types they reference.
+        
+        shape is never a valid field detail or option, never include it. Take your time, go slow, and produce only valid json.
+        ALWAYS Ensure that the ref values used in your logic section match exactly with the ref values defined in your fields.
+        ####
+        
+        You will be considered to have failed if your survey is less than 20 questions or if you return incomplete or invalid json.
+        Your survey should be at least 4000 words. Your Complete Json for the 20 question Survey Based on the Corpus:"""}],
+        
+        
+              max_tokens=4000,
+              temperature=0.2,
+              response_format={ "type": "json_object" }
+        )
+        
+        print(response.choices[0].message.content)
+
+
+        import re
+        import json
+        
+        def replace_bool(match):
+            if match.group(0) == 'true':
+                return 'True'
+            else:
+                return 'False'
+        
+        gpt_json = response.choices[0].message.content
+        result = re.sub(r'\btrue\b|\bfalse\b', replace_bool, gpt_json)
+        
+        print(result)
+        json_object = json.loads(response.choices[0].message.content)
+
+
+
+        # Define your Typeform API token and endpoint
+        st.secrets["api_token"]
+        endpoint = 'https://api.typeform.com/forms'
+    
+        
+        def create_form(api_token, form_data):
+            """
+            Create a new form on Typeform using the provided API token and form data.
+        
+            Parameters:
+            api_token (str): Typeform API token for authentication.
+            form_data (dict): The data for the form to be created.
+        
+            Returns:
+            dict: JSON response containing the created form data.
+            """
+            endpoint = 'https://api.typeform.com/forms'
+            headers = {
+                'Authorization': f'Bearer {api_token}',
+                'Content-Type': 'application/json'
+            }
+        
+            try:
+                response = requests.post(endpoint, json=form_data, headers=headers)
+                print(response.content)
+                response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+                return response.json()
+            except requests.RequestException as e:
+                print(f"An error occurred: {e}")
+                return None
+        
+        
+        
+        created_form = create_form(api_token, json_object)
+        if created_form:
+            st.write(json.dumps(created_form, indent=4))
+
+        
         progress.progress(100)
         st.markdown(final_article)
         with open("All_Results.zip", "rb") as fp:
@@ -625,7 +948,7 @@ def main():
                 mime="application/zip"
             )
 
-
+        print('Successfully created All_Results.zip')
     
         st.success("Research, outline, and final article generation completed successfully.")
 
