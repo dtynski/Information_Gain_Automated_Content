@@ -569,11 +569,11 @@ def main():
         
         conversation.append(str(prompt))
         query_gpt = query_assistant(prompt)
-        
+        conversation.append(query_gpt)
         final_article.append(query_gpt)
         
         while "Article Complete" not in query_gpt:
-          conversation.append(query_gpt)
+          
           keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections"
           conversation.append(keep_going)
           query_gpt = query_assistant(str(conversation))
