@@ -553,7 +553,7 @@ def main():
 
         
         status.text('Outline generation concluded. Now Writing Full Article.')
-        progress.progress(80)
+        progress.progress(70)
         
         # Convert DataFrames to CSV bytes
         aggregate_notes_csv_bytes = convert_df_to_csv_bytes(full_notes)
