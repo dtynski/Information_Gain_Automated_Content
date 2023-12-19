@@ -569,7 +569,7 @@ def main():
         
         conversation.append("Table of Contents:")
         conversation.append("---------------------------------------")
-        query_gpt = query_assistant(conversation)
+        query_gpt = query_assistant(str(conversation))
         st.write(query_gpt)
         conversation.append(query_gpt)
         final_article.append(query_gpt)
