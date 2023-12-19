@@ -563,34 +563,36 @@ def main():
         notes = full_notes
 
         prompt = f"""You will be writing a long-form article based on an outline and a notes corpus. You include everything in the outline, including the top level sections, subsections, and sub-subsections. Start by writing a table of contents (only included in first iteration) that mirrors exactly what you see in the outline with all sections/subsections/subsubsections included. Enhance if needed. It should have many sections, subsections, and subsubsections. Then go section by section, the table of contents should only be returned once. While following the outline, draw extensively on your notes corpus. The notes contains many sections, each related to a specific source. The sections of notes on individual sources are seperated by file-Gcjd8AsDYc1zhct03uHXyoqo filenames like that.  When citing a source, always reference a specific url from the notes corpus. The citation should be inline and use the format: [URL Title from the notes,URL from the notes always starting with http or https]. After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
-        Here is the outline you will follow: #### {outline} ####. Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. Notes: #### {notes} #### .You never write generically or with generalizations, you always attempt to use specific facts, data, etc. You also like to include markdown tables. Make sure to cite your sources inline. Each section is at least 2000 words. You write in beautiful markdown and always cite your sources from http or https urls found in your notes corpus. Leverage your notes to the fullest extent possible. At the beginning of each section, make a detailed recommendation for an image to include. This image should be a simplistic representation of the given section. It should NEVER include text or be super complex. The image description should be very specific to help a generative AI render it accurately. Provide these instructions like this: [Insert Image Here: The Image Description] . Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. Each section will likely have a table or other structured markdown viz. Be extremely thorough and comprehensive with a focus on making the article as useful and actionable as possible. When referencing a url, do it inline and use [URL Title from the notes,URL from the notes always starting with http or https]. Never cite references like this [[1†source]]. Always use the actual http or https url. Try to use as many different sources as possible in your article. Because the notes are so extensive, you should be referencing sources, all sources should be referenced by the end of the article. When you have finished all the sections return the text - Article Complete -"""
+        Here is the outline you will follow: #### {outline} ####. Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. Notes: #### {notes} #### .You never write generically or with generalizations, you always attempt to use specific facts, data, etc. You also like to include markdown tables. Make sure to cite your sources inline. Each section is at least 2000 words. You write in beautiful markdown and always cite your sources from http or https urls found in your notes corpus. Leverage your notes to the fullest extent possible. At the beginning of each section, make a detailed recommendation for an image to include. This image should be a simplistic representation of the given section. It should NEVER include text or be super complex. The image description should be very specific to help a generative AI render it accurately. Provide these instructions like this: [Insert Image Here: The Image Description] . Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. Each section will likely have a table or other structured markdown viz. Be extremely thorough and comprehensive with a focus on making the article as useful and actionable as possible. When referencing a url, do it inline and use [URL Title from the notes,URL from the notes always starting with http or https]. Never cite references like this [[1†source]]. Always use the actual http or https url. Try to use as many different sources as possible in your article. Because the notes are so extensive, you should be referencing sources, all sources should be referenced by the end of the article. When you have finished all the sections return the text - Article Complete - Start with the table of contents, and then write each section of the table of contents one at a time."""
         
         conversation.append(str(prompt))
         query_gpt = query_assistant(prompt)
+        conversation.append("Table of Contents:")
+        conversation.append("---------------------------------------")
         conversation.append(query_gpt)
         status.text(conversation)
         final_article.append(query_gpt)
         i=1
-        while "Article Complete" not in query_gpt:
+        while "Article Complete" not in final_article:
           progress.progress(70 + 1)
           status.text(f'Writing Article Section {i}')
           st.write(query_gpt)
           st.write("-----------------------------")
           keep_going = "Please write the next specified section. If all sections have been completed, return the text  - Article Complete - when finished with all sections. Next Section:"
           conversation.append(keep_going)
-          query_gpt = query_assistant(str(conversation))
-          final_article.append(query_gpt)
+          second_query_gpt = query_assistant(str(conversation))
+          final_article.append(second_query_gpt)
           #print(f"GPT Response:{query_gpt}")
           i+=1
         
-        if "Bibliography Complete" not in query_gpt:
+        if "Bibliography Complete" not in final_article:
           status.text('Writing Bibliography')
           conversation.append(query_gpt)
           add_bibliography = "Now please add a nicely formatted markdown bibliography at the end. The Bibliography should refrence the http or https links as they appear in the notes corpus that are referenced in the article. Once the bibliography is done, return the string - Bibliography Complete -"
           conversation.append(add_bibliography)
-          query_gpt = query_assistant(str(conversation))
+          final_query_gpt = query_assistant(str(conversation))
         
-          final_article.append(query_gpt)
+          final_article.append(final_query_gpt)
         final_article = " ".join(final_article)
         final_article =  fix_markdown(final_article)
         final_article = remove_sections_within_brackets(final_article)
