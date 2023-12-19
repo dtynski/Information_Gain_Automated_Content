@@ -576,11 +576,13 @@ def main():
         while "Article Complete" not in final_article:
           progress.progress(70 + 1)
           status.text(f'Writing Article Section {i}')
-          st.write(query_gpt)
+          
           st.write("-----------------------------")
           keep_going = "Please write the next specified section. If all sections have been completed, return the text  - Article Complete - when finished with all sections. Next Section:"
           conversation.append(keep_going)
           second_query_gpt = query_assistant(str(conversation))
+          conversation.append(second_query_gpt)
+          st.write(second_query_gpt)
           final_article.append(second_query_gpt)
           #print(f"GPT Response:{query_gpt}")
           i+=1
