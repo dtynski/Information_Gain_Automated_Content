@@ -542,7 +542,7 @@ def main():
         # Retrieve the assistant's response
         response = client.beta.threads.messages.list(thread_id=outline_thread_id)
         outline_message_id = response.data[0].id
-        outline_message_content = response.data[0].content[0].text
+        outline_message_content = response.data[0].content[0].text.value
         outline_message_role= response.data[0].role
         outline_message_file_id = response.data[0].file_ids
     
@@ -868,11 +868,6 @@ def main():
               response_format={ "type": "json_object" }
         )
         
-        #print(response.choices[0].message.content)
-
-
-        import re
-        import json
         
         def replace_bool(match):
             if match.group(0) == 'true':
@@ -882,8 +877,7 @@ def main():
         
         gpt_json = response.choices[0].message.content
         result = re.sub(r'\btrue\b|\bfalse\b', replace_bool, gpt_json)
-        
-        #print(result)
+
         json_object = json.loads(response.choices[0].message.content)
 
 
@@ -945,7 +939,7 @@ def main():
             zipf.write(all_outlines_file_name, all_outlines_file_name)
         
         
-        progress.progress(100)
+        progress.progress(99)
         st.markdown(final_article)
         if created_form:
             survey_form = json.dumps(created_form, indent=4)
@@ -960,7 +954,7 @@ def main():
 
         print('Successfully created All_Results.zip')
     
-        st.success("Research, outline, and final article generation completed successfully.")
+        status.text("Research, outline, and final article generation completed successfully.")
 
 if __name__ == "__main__":
     main()
