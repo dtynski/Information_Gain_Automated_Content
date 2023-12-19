@@ -386,7 +386,7 @@ def query_assistant(prompt):
     response = client.chat.completions.create(
         model="gpt-4-1106-preview",
         messages=[
-        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes."},
+        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
         {"role": "user", "content": prompt}
         ],
         max_tokens=4000
@@ -572,15 +572,16 @@ def main():
         final_article.append(query_gpt)
         i=1
         while "Article Complete" not in query_gpt:
-          progress.progress(70 + i)
+          progress.progress(70 + 1)
           status.text(f'Writing Article Section {i}')
           st.write(query_gpt)
           st.write("-----------------------------")
-          keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections. Continue from where you left off:"
+          keep_going = "please continue the article until it is complete by writing the next section as directed. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections. Continue from where you left off:"
           conversation.append(keep_going)
           query_gpt = query_assistant(str(conversation))
           final_article.append(query_gpt)
           #print(f"GPT Response:{query_gpt}")
+          i+=1
         
         if "Bibliography Complete" not in query_gpt:
           status.text('Writing Bibliography')
