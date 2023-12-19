@@ -571,9 +571,10 @@ def main():
         query_gpt = query_assistant(prompt)
         conversation.append(query_gpt)
         final_article.append(query_gpt)
-        
+        i=0
         while "Article Complete" not in query_gpt:
-          
+          i+=1
+          status.text(f'Writing Article Section {i}')
           keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections"
           conversation.append(keep_going)
           query_gpt = query_assistant(str(conversation))
@@ -581,6 +582,7 @@ def main():
           #print(f"GPT Response:{query_gpt}")
         
         if "Bibliography Complete" not in query_gpt:
+          status.text('Writing Bibliography')
           conversation.append(query_gpt)
           add_bibliography = "Now please add a nicely formatted markdown bibliography at the end. The Bibliography should refrence the http or https links as they appear in the notes corpus that are referenced in the article. Once the bibliography is done, return the string - Bibliography Complete -"
           conversation.append(add_bibliography)
