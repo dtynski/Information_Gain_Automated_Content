@@ -548,8 +548,6 @@ def main():
     
         outline.append(outline_message_content)
 
-        i += 1
-
         status.text('Finalizing outline...')
         df_outline = pd.DataFrame(outline)
 
@@ -574,6 +572,7 @@ def main():
         i=0
         while "Article Complete" not in query_gpt:
           i+=1
+          progress.progress(80++)
           status.text(f'Writing Article Section {i}')
           keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections"
           conversation.append(keep_going)
@@ -594,30 +593,7 @@ def main():
         final_article = remove_sections_within_brackets(final_article)
         
         
-        
 
-        # Create a zip archive
-        with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # Save the outline string as a text file and add to the zip archive
-            outline_file_name = 'Final_Outline.txt'
-            save_string_to_file(str(outline), outline_file_name)
-            zipf.write(outline_file_name, outline_file_name)
-
-            # Save the final article
-            final_article_file_name = 'Final_Article.txt'
-            save_string_to_file(str(final_article), final_article_file_name)
-            zipf.write(final_article_file_name, final_article_file_name)
-        
-            # Save the full notes as a CSV file and add to the zip archive
-            full_notes_file_name = 'Full_Notes.csv'
-            save_bytes_to_file(aggregate_notes_csv_bytes, full_notes_file_name)
-            zipf.write(full_notes_file_name, full_notes_file_name)
-        
-            # Save the all outlines as a CSV file and add to the zip archive
-            all_outlines_file_name = 'All_Outlines.csv'
-            save_bytes_to_file(all_outlines_csv_bytes, all_outlines_file_name)
-            zipf.write(all_outlines_file_name, all_outlines_file_name)
-        
         
         
         status.text('Final Article Complete. Now Creating the Survey.')
@@ -936,6 +912,28 @@ def main():
         
         
         created_form = create_form(api_token, json_object)
+        progress.progress(95)
+        # Create a zip archive
+        with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # Save the outline string as a text file and add to the zip archive
+            outline_file_name = 'Final_Outline.txt'
+            save_string_to_file(str(outline), outline_file_name)
+            zipf.write(outline_file_name, outline_file_name)
+
+            # Save the final article
+            final_article_file_name = 'Final_Article.txt'
+            save_string_to_file(str(final_article), final_article_file_name)
+            zipf.write(final_article_file_name, final_article_file_name)
+        
+            # Save the full notes as a CSV file and add to the zip archive
+            full_notes_file_name = 'Full_Notes.csv'
+            save_bytes_to_file(aggregate_notes_csv_bytes, full_notes_file_name)
+            zipf.write(full_notes_file_name, full_notes_file_name)
+        
+            # Save the all outlines as a CSV file and add to the zip archive
+            all_outlines_file_name = 'All_Outlines.csv'
+            save_bytes_to_file(all_outlines_csv_bytes, all_outlines_file_name)
+            zipf.write(all_outlines_file_name, all_outlines_file_name)
         
         
         progress.progress(100)
