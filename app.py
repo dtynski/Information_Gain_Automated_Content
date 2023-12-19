@@ -484,7 +484,7 @@ def main():
             if run_status in ['queued', 'in_progress']:
                 run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
         
-                time.sleep(5)  # Wait for 5 seconds before polling again
+                time.sleep(1)  # Wait for 5 seconds before polling again
                 print(run_status)
                 continue
             if run_status in ['completed', 'failed']:
@@ -526,7 +526,7 @@ def main():
             if run_status in ['queued', 'in_progress']:
                 run_status = client.beta.threads.runs.retrieve(thread_id=outline_thread_id, run_id=run_response.id).status
         
-                time.sleep(5)  # Wait for 5 seconds before polling again
+                time.sleep(1)  # Wait for 5 seconds before polling again
                 print(run_status)
                 continue
             if run_status in ['completed', 'failed']:
@@ -574,7 +574,8 @@ def main():
         while "Article Complete" not in query_gpt:
           progress.progress(70 + i)
           status.text(f'Writing Article Section {i}')
-          status.text(query_gpt)
+          st.write(query_gpt)
+          st.write("-----------------------------")
           keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections. Continue from where you left off:"
           conversation.append(keep_going)
           query_gpt = query_assistant(str(conversation))
