@@ -574,6 +574,7 @@ def main():
         while "Article Complete" not in query_gpt:
           progress.progress(70 + i)
           status.text(f'Writing Article Section {i}')
+          status.text(query_gpt)
           keep_going = "please continue the article until it is complete. Always using markdown and following the outline while using the notes corpus to really fill in detailed information, facts, stats, and important learnings and takeaways. Return the text  - Article Complete - when finished with all sections. Continue from where you left off:"
           conversation.append(keep_going)
           query_gpt = query_assistant(str(conversation))
