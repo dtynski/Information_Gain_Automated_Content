@@ -578,7 +578,7 @@ def main():
           status.text(f'Writing Article Section {i}')
           
           st.write("-----------------------------")
-          keep_going = "Please write the next specified section. If all sections have been completed, return the text  - Article Complete - when finished with all sections. Next Section:"
+          keep_going = "Please write the next specified section last specified. If all sections have been completed, return the text  - Article Complete - when finished with all sections. Next Section:"
           conversation.append(keep_going)
           second_query_gpt = query_assistant(str(conversation))
           conversation.append(second_query_gpt)
