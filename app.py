@@ -568,6 +568,7 @@ def main():
         conversation.append(str(prompt))
         query_gpt = query_assistant(prompt)
         conversation.append(query_gpt)
+        status.text(conversation)
         final_article.append(query_gpt)
         i=1
         while "Article Complete" not in query_gpt:
