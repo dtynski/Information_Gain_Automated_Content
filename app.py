@@ -599,9 +599,10 @@ def main():
         you always attempt to use specific facts, data, etc. You also like to include markdown tables. 
         Make sure to cite your sources inline. Each section is at least 2000 words. 
         You write in beautiful markdown and always cite your sources from http or https urls found in your notes corpus. 
-        Leverage your notes to the fullest extent possible. At the beginning of each section, make a detailed recommendation for an image to include. 
+        Leverage your notes to the fullest extent possible. 
+        At the beginning of each top level section only section, make a detailed recommendation for an image to include. 
         This image should be a simplistic representation of the given section. 
-        It should NEVER include text or be super complex. 
+        It should NEVER instructions for including text or be super complex. 
         The image description should be very specific to help a generative AI render it accurately. 
         Provide these instructions like this: [Insert Image Here: The Image Description] . 
         Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. 
