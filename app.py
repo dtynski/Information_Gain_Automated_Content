@@ -379,11 +379,11 @@ def remove_sections_within_brackets(text):
 
     return cleaned_text
 
-def query_assistant(prompt):
+def query_assistant(prompt,type_of_writer,style):
     response = client.chat.completions.create(
         model="gpt-4-1106-preview",
         messages=[
-        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes by writing in beautiful and well organized markdown. You work step by step and never write the same section twice. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
+        {"role": "system", "content": f"You are an award winning {type_of_writer} that iteratively writes articles based on your outline and notes by writing in beautiful and well organized markdown. Your voice/style is: {style} .  You work step by step and never write the same section twice. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
         {"role": "user", "content": prompt}
         ],
         max_tokens=4000,
@@ -424,6 +424,8 @@ def main():
     st.title("Automated Content Creation Pipeline - Information Gain")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
     num_articles = st.text_input("How Many Pages of Search Results Should We Use for Research?", 1)
+    type_of_writer = st.text_input("What Type of Writer Should We Simulate?", "NYTimes Journalist")
+    style = st.text_input("What Style or Voice Shoule We Adhere To?", "Professional and actionable.")
     outline = []
     final_article = []
     conversation = []
@@ -625,7 +627,7 @@ def main():
         
         conversation.append("Table of Contents:")
         conversation.append("---------------------------------------")
-        query_gpt = query_assistant(str(conversation))
+        query_gpt = query_assistant(str(conversation),type_of_writer,style)
         st.write(query_gpt)
         conversation.append(query_gpt)
         final_article.append(query_gpt)
@@ -639,7 +641,7 @@ def main():
           keep_going = "Please write the next specified section. Do not rewrite existing sections, always move on to the next section that has not been completed yet. If all sections have been completed, return the text  - Article Complete - when finished with all sections. Next Section:"
           conversation.append(keep_going)
           #st.write(conversation)
-          second_query_gpt = query_assistant(str(conversation))
+          second_query_gpt = query_assistant(str(conversation)type_of_writer,style)
           document_with_images = generate_images_from_placeholders(second_query_gpt)
           conversation.append(document_with_images)
           st.markdown(document_with_images, unsafe_allow_html=True)
@@ -652,7 +654,7 @@ def main():
           status.text('Writing Bibliography')
           add_bibliography = "Now please add a nicely formatted markdown bibliography at the end. The Bibliography should refrence the http or https links as they appear in the notes corpus that are referenced in the article. Once the bibliography is done, return the string - Bibliography Complete -"
           conversation.append(add_bibliography)
-          final_query_gpt = query_assistant(str(conversation))
+          final_query_gpt = query_assistant(str(conversation)type_of_writer,style)
           st.markdown(final_query_gpt, unsafe_allow_html=True)
 
           final_article.append(final_query_gpt)
