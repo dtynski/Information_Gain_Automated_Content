@@ -399,7 +399,7 @@ def main():
 
     st.title("Automated Content Creation Pipeline - Information Gain")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
-    num_articles = st.text_input("How Many Articles Should We Research?", "10")
+    num_articles = st.text_input("How Many Pages of Search Results Should We Use for Research?", "1")
     outline = []
     final_article = []
     conversation = []
