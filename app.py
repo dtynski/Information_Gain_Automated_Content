@@ -279,15 +279,12 @@ def worker(file_id_link_tuple, query,status,client):
                   ###
                   Topic/Subject: [Main Topic or Subject Name]
                   Article Title: The title of the article you are referencing.
-                  Source: The URL of the website you are referencing. Always starts with http or https
+                  Article URL: The URL of the page you are referencing. What you return MUST always start with http or https and be the full article URL
                   Authors: If there are any authors found, include the author name and bio here
                   Date: If the article is dated, include the date found here.
                   ###
                   The total length of the information extracted should be at least 6000 words long. Always include at least one generated data table, even if it is simple.
-                  Never say anything like -i will now begin taking notes-, just start taking notes. You should always start your response with:
-                  Article Source Title: You will fill this in with The Title of the Article You are extracting info from.
-                  Article Source URL for Later Citation: You will fill this in with The URL of the Article. This must be the http or https url found in the corpus.
-                  etc.
+                  Also, whenever possible extract authoritative quotes which can be used to later. Never say anything like -i will now begin taking notes-, just start taking notes. You should always start your response with:
                   Full Notes:""",
         file_ids=[file_id]
     )
@@ -386,7 +383,7 @@ def query_assistant(prompt):
     response = client.chat.completions.create(
         model="gpt-4-1106-preview",
         messages=[
-        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
+        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes. You work step by step and never write the same section twice. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
         {"role": "user", "content": prompt}
         ],
         max_tokens=4000
@@ -505,7 +502,7 @@ def main():
         #st.write(the_outline.value)
         prompt = f"""Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}.
         For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]
-        You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline.
+        You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline. Make sure the outline is in beautiful and valid markdown.
         Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.The goal is to add all missing facts, data, stats, main points, missing sections, missing subsections, etc.
         Here is the outline to extend and improve using the corpus: {the_outline.value}"""
 
@@ -563,7 +560,7 @@ def main():
         outline = str(outline)
         
 
-        prompt = f"""You will be writing a long-form article based on an outline and a notes corpus. You include everything in the outline, including the top level sections, subsections, and sub-subsections. Start by writing a table of contents (only included in first iteration) that mirrors exactly what you see in the outline with all sections/subsections/subsubsections included. Enhance if needed. It should have many sections, subsections, and subsubsections. Then go section by section, the table of contents should only be returned once. While following the outline, draw extensively on your notes corpus. The notes contains many sections, each related to a specific source. The sections of notes on individual sources are seperated by file-Gcjd8AsDYc1zhct03uHXyoqo filenames like that.  When citing a source, always reference a specific url from the notes corpus. The citation should be inline and use the format: [URL Title from the notes,URL from the notes always starting with http or https]. After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
+        prompt = f"""You will be writing a long-form article based on an outline and a notes corpus. You include everything in the outline, including the top level sections, subsections, and sub-subsections. Never write the same section twice, always progress to the next section. Start by writing a table of contents (only included in first iteration) that mirrors exactly what you see in the outline with all sections/subsections/subsubsections included. Enhance if needed. It should have many sections, subsections, and subsubsections. Then go section by section, the table of contents should only be returned once. While following the outline, draw extensively on your notes corpus. The notes contains many sections, each related to a specific source. The sections of notes on individual sources are seperated by file-Gcjd8AsDYc1zhct03uHXyoqo filenames like that.  When citing a source, always reference a specific url from the notes corpus. The citation should be inline and use the format: [URL Title from the notes,URL from the notes always starting with http or https]. After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
         Here is the outline you will follow: #### {outline} ####. Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. Notes Dataframe: #### {full_notes_string} #### .You never write generically or with generalizations, you always attempt to use specific facts, data, etc. You also like to include markdown tables. Make sure to cite your sources inline. Each section is at least 2000 words. You write in beautiful markdown and always cite your sources from http or https urls found in your notes corpus. Leverage your notes to the fullest extent possible. At the beginning of each section, make a detailed recommendation for an image to include. This image should be a simplistic representation of the given section. It should NEVER include text or be super complex. The image description should be very specific to help a generative AI render it accurately. Provide these instructions like this: [Insert Image Here: The Image Description] . Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. Each section will likely have a table or other structured markdown viz. Be extremely thorough and comprehensive with a focus on making the article as useful and actionable as possible. When referencing a url, do it inline and use [URL Title from the notes,URL from the notes always starting with http or https]. Never cite references like this [[1†source]]. Always use the actual http or https url. Try to use as many different sources as possible in your article. Because the notes are so extensive, you should be referencing sources, all sources should be referenced by the end of the article. When you have finished all the sections return the text - Article Complete - Start with the table of contents, and then write each section of the table of contents one at a time."""
         
         conversation.append(str(prompt))
