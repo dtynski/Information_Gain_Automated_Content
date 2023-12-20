@@ -386,7 +386,8 @@ def query_assistant(prompt):
         {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes. You work step by step and never write the same section twice. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
         {"role": "user", "content": prompt}
         ],
-        max_tokens=4000
+        max_tokens=4000,
+        temperature = 0.4
     )
     return response.choices[0].message.content
 
@@ -408,7 +409,7 @@ def generate_images_from_placeholders(document):
                 n=1,
             )
             image_url = response.data[0].url
-            replacements[f'[Insert Image Here: {description}]'] = f'<img src="{image_url}" alt="{description}" width="800"/>'
+            replacements[f'[Insert Image Here: {description}]'] = f'<img src="{image_url}" alt="{description}" width="600"/>'
         except Exception as e:
             print(f"Error generating image for {description}: {e}")
 
@@ -594,9 +595,7 @@ def main():
         The sections of notes on individual sources are seperated by file-Gcjd8AsDYc1zhct03uHXyoqo filenames like that.  
         When citing a source, always reference a specific url from the notes corpus. 
         The citation should be inline and use the format: [URL Title from the notes,URL from the notes always starting with http or https]. 
-        Here is the outline you will follow: #### {outline} ####. 
-        Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. 
-        Notes Dataframe: #### {full_notes_string} #### .You never write generically or with generalizations, 
+        You never write generically or with generalizations, 
         you always attempt to use specific facts, data, etc. You also like to include markdown tables. 
         Make sure to cite your sources inline. Each section is at least 2000 words. 
         You write in beautiful markdown and always cite your sources from http or https urls found in your notes corpus. 
@@ -607,12 +606,18 @@ def main():
         Provide these instructions like this: [Insert Image Here: The Image Description] . 
         Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. 
         Each section will likely have a table or other structured markdown viz. 
+        Use as many relevant sources as possible in each section.
         Be extremely thorough and comprehensive with a focus on making the article as useful and actionable as possible. 
         When referencing a url, do it inline and use [URL Title from the notes,URL from the notes always starting with http or https]. 
         Never cite references like this [[1†source]]. Always use the actual http or https url. Try to use as many different sources as possible in your article. 
         Because the notes are so extensive, you should be referencing sources, all sources should be referenced by the end of the article. 
         When you have finished all the sections return the text - Article Complete - Start with the table of contents, and then write each section of the table of contents one at a time.
-        After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title]."""
+        After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
+        Here is the outline you will follow: #### {outline} ####. 
+        Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. 
+        Notes Dataframe: #### {full_notes_string} #### 
+        Please take your time, think step by step, and return the full section.
+        Section:"""
         
         conversation.append(str(prompt))
         
