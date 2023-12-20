@@ -641,7 +641,7 @@ def main():
           keep_going = "Please write the next specified section. Do not rewrite existing sections, always move on to the next section that has not been completed yet. If all sections have been completed, return the text  - Article Complete - when finished with all sections. Next Section:"
           conversation.append(keep_going)
           #st.write(conversation)
-          second_query_gpt = query_assistant(str(conversation)type_of_writer,style)
+          second_query_gpt = query_assistant(str(conversation),type_of_writer,style)
           document_with_images = generate_images_from_placeholders(second_query_gpt)
           conversation.append(document_with_images)
           st.markdown(document_with_images, unsafe_allow_html=True)
@@ -654,7 +654,7 @@ def main():
           status.text('Writing Bibliography')
           add_bibliography = "Now please add a nicely formatted markdown bibliography at the end. The Bibliography should refrence the http or https links as they appear in the notes corpus that are referenced in the article. Once the bibliography is done, return the string - Bibliography Complete -"
           conversation.append(add_bibliography)
-          final_query_gpt = query_assistant(str(conversation)type_of_writer,style)
+          final_query_gpt = query_assistant(str(conversation),type_of_writer,style)
           st.markdown(final_query_gpt, unsafe_allow_html=True)
 
           final_article.append(final_query_gpt)
