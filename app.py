@@ -299,7 +299,7 @@ def worker(file_id_link_tuple, query,status,client):
     while True:
         run_status = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_response.id).status
         if run_status in ['queued', 'in_progress']:
-            time.sleep(5)
+            time.sleep(1)
             continue
         if run_status in ['completed', 'failed', 'requires_action']:
             break
@@ -383,7 +383,7 @@ def query_assistant(prompt):
     response = client.chat.completions.create(
         model="gpt-4-1106-preview",
         messages=[
-        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes. You work step by step and never write the same section twice. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
+        {"role": "system", "content": f"You are an award winning NYTimes writer that iteratively writes articles based on your outline and notes by writing in beautiful and well organized markdown. You work step by step and never write the same section twice. If you are given a specific section to work on, please only do that section. When all sections are complete return - Article Complete -."},
         {"role": "user", "content": prompt}
         ],
         max_tokens=4000,
