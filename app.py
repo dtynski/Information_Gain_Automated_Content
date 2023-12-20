@@ -390,7 +390,33 @@ def query_assistant(prompt):
     )
     return response.choices[0].message.content
 
+def generate_images_from_placeholders(document):
+    # Find all placeholders
+    placeholders = re.findall(r'\[Insert Image Here: ([^\]]+)\]', document, re.DOTALL)
+    print(len(placeholders))
+    replacements = {}
 
+    for description in placeholders:
+        print(description)
+        try:
+            # Generate an image
+            response = client.images.generate(
+                model="dall-e-3",
+                prompt=f"An image of {description} but done in a very simple way, using metaphor if needed. Avoid including text.",
+                size="1792x1024",
+                quality="hd",
+                n=1,
+            )
+            image_url = response.data[0].url
+            replacements[f'[Insert Image Here: {description}]'] = f"![{description}]({image_url})"
+        except Exception as e:
+            print(f"Error generating image for {description}: {e}")
+
+    # Replace placeholders with images
+    for old, new in replacements.items():
+        document = document.replace(old, new)
+
+    return document
 
 def main():
 
@@ -583,8 +609,10 @@ def main():
           #st.write(conversation)
           second_query_gpt = query_assistant(str(conversation))
           conversation.append(second_query_gpt)
-          st.write(second_query_gpt)
-          final_article.append(second_query_gpt)
+          document_with_images = generate_images_from_placeholders(second_query_gpt)
+    
+          st.write(document_with_images)
+          final_article.append(document_with_images)
           #print(f"GPT Response:{query_gpt}")
           i+=1
         
