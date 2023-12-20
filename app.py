@@ -67,10 +67,10 @@ def get_root_domain(url):
     root_domain = '.'.join(domain_parts[-2:]) if len(domain_parts) > 1 else parsed_url.netloc
     return root_domain
 
-def scrape_articles(query):
+def scrape_articles(query,num_articles):
     all_results = []
 
-    for i in range(1):  # Iterating over three pages
+    for i in range(num_articles):  # Iterating over three pages
 
         start_index = i * 10  # Google usually shows 10 results per page
         params = {
@@ -399,6 +399,7 @@ def main():
 
     st.title("Automated Content Creation Pipeline - Information Gain")
     query = st.text_input("Enter your query", "2023 Israel Hamas War Timeline")
+    num_articles = st.text_input("How Many Articles Should We Research?", "10")
     outline = []
     final_article = []
     conversation = []
@@ -414,7 +415,7 @@ def main():
 
         # Scraping articles
         status.text('Scraping articles...')
-        articles = scrape_articles(query)
+        articles = scrape_articles(query,num_articles)
         status.text('Articles scraped successfully!')
         progress.progress(10)
 
@@ -906,16 +907,19 @@ def main():
                 'Content-Type': 'application/json'
             }
         
-            try:
-                response = requests.post(endpoint, json=form_data, headers=headers)
-                #print(response.content)
-                response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
-                return response.json()
-            except requests.RequestException as e:
-                print(f"An error occurred: {e}")
-                return None
-        
-        
+
+            response = requests.post(endpoint, json=form_data, headers=headers)
+            if response.status_code == 201:
+                # Extract the URL from the 'Location' header of the response
+                form_url = response.headers.get('Location', None)
+            
+                if form_url:
+                    st.write("Form URL:", form_url)
+                else:
+                    st.write("Form URL not found in the response.")
+            else:
+                st.write("Failed to create form. Status code:", response.status_code)
+                    
         
         created_form = create_form(api_token, json_object)
         progress.progress(95)
@@ -944,18 +948,6 @@ def main():
         
         progress.progress(99)
         st.markdown(final_article)
-        if created_form:
-            # Assuming 'created_form' is the response object from the Typeform API request
-            # Extract the URL from the 'Location' header
-            form_url = created_form.headers.get('Location', None)
-        
-            if form_url:
-                st.write("Survey URL:", form_url)
-            else:
-                st.write("Survey URL not found in the response.")
-        else:
-            st.write("No response from form creation.")
-
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
                 label="Download ZIP",
