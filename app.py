@@ -591,9 +591,9 @@ def main():
           #print(f"GPT Response:{query_gpt}")
           i+=1
         
-        if "Bibliography Complete" not in final_article:
+        if not any("Bibliography Complete" in article_section for article_section in final_article):
+
           status.text('Writing Bibliography')
-          conversation.append(query_gpt)
           add_bibliography = "Now please add a nicely formatted markdown bibliography at the end. The Bibliography should refrence the http or https links as they appear in the notes corpus that are referenced in the article. Once the bibliography is done, return the string - Bibliography Complete -"
           conversation.append(add_bibliography)
           final_query_gpt = query_assistant(str(conversation))
