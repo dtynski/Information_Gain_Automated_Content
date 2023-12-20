@@ -409,7 +409,7 @@ def generate_images_from_placeholders(document):
                 n=1,
             )
             image_url = response.data[0].url
-            replacements[f'[Insert Image Here: {description}]'] = f'<img src="{image_url}" alt="{description}" width="800"/>'
+            replacements[f'[Insert Image Here: {description}]'] = f'<img src="{image_url}" width="800"/>'
         except Exception as e:
             print(f"Error generating image for {description}: {e}")
 
