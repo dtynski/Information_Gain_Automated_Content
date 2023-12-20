@@ -635,7 +635,7 @@ def main():
           second_query_gpt = query_assistant(str(conversation))
           document_with_images = generate_images_from_placeholders(second_query_gpt)
           conversation.append(document_with_images)
-          st.write(document_with_images)
+          st.markdown(document_with_images, unsafe_allow_html=True)
           final_article.append(document_with_images)
           #print(f"GPT Response:{query_gpt}")
           i+=1
@@ -646,7 +646,8 @@ def main():
           add_bibliography = "Now please add a nicely formatted markdown bibliography at the end. The Bibliography should refrence the http or https links as they appear in the notes corpus that are referenced in the article. Once the bibliography is done, return the string - Bibliography Complete -"
           conversation.append(add_bibliography)
           final_query_gpt = query_assistant(str(conversation))
-        
+          st.markdown(final_query_gpt, unsafe_allow_html=True)
+
           final_article.append(final_query_gpt)
             
         final_article = " ".join(final_article)
