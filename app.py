@@ -461,7 +461,8 @@ def main():
             "The outline should include all unique information found in the corpus, highly organized, retaining all salient facts. The primary goal of this outline is maximum information density.6,000 word MINIMUM."
             "Say research complete when done.",
             model="gpt-3.5-turbo-1106",
-            tools=[{"type": "retrieval"}]
+            tools=[{"type": "retrieval"}],
+            file_ids=uploaded_file_ids
         ).id
 
         outline_thread_id = client.beta.threads.create().id
@@ -470,8 +471,7 @@ def main():
         client.beta.threads.messages.create(
             thread_id=outline_thread_id,
             role="user",
-            content=prompt,
-            file_ids=uploaded_file_ids
+            content=prompt
         )
 
         run_response = client.beta.threads.runs.create(
