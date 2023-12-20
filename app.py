@@ -633,9 +633,8 @@ def main():
           conversation.append(keep_going)
           #st.write(conversation)
           second_query_gpt = query_assistant(str(conversation))
-          conversation.append(second_query_gpt)
           document_with_images = generate_images_from_placeholders(second_query_gpt)
-    
+          conversation.append(document_with_images)
           st.write(document_with_images)
           final_article.append(document_with_images)
           #print(f"GPT Response:{query_gpt}")
