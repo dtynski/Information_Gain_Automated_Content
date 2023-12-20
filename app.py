@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import json
 import time
 import os
-import io
 import tempfile
 import logging
 import pandas as pd
@@ -16,7 +15,7 @@ import re
 import streamlit as st
 import zipfile
 import concurrent.futures
-import concurrent.futures
+import io
 
 # Securely load API keys
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
@@ -981,37 +980,44 @@ def main():
         
         created_form = create_form(api_token, json_object)
         progress.progress(95)
-        # Create a zip archive
-        with zipfile.ZipFile('All_Results.zip', 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # Create a buffer in memory for the ZIP file
+        buffer = io.BytesIO()
+    
+        # Create a zip archive in the buffer
+        with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
             # Save the outline string as a text file and add to the zip archive
             outline_file_name = 'Final_Outline.txt'
             save_string_to_file(str(outline), outline_file_name)
             zipf.write(outline_file_name, outline_file_name)
-
+    
             # Save the final article
             final_article_file_name = 'Final_Article.txt'
             save_string_to_file(str(final_article), final_article_file_name)
             zipf.write(final_article_file_name, final_article_file_name)
-        
+    
             # Save the full notes as a CSV file and add to the zip archive
             full_notes_file_name = 'Full_Notes.csv'
             save_bytes_to_file(aggregate_notes_csv_bytes, full_notes_file_name)
             zipf.write(full_notes_file_name, full_notes_file_name)
-        
+    
             # Save the all outlines as a CSV file and add to the zip archive
             all_outlines_file_name = 'All_Outlines.csv'
             save_bytes_to_file(all_outlines_csv_bytes, all_outlines_file_name)
             zipf.write(all_outlines_file_name, all_outlines_file_name)
-        
-        
+    
+        # Move the buffer's pointer to the beginning after writing
+        buffer.seek(0)
+    
         progress.progress(99)
-        #st.markdown(final_article)
+    
+        # Provide the buffer's content to the download button
         btn = st.download_button(
             label="Download ZIP",
-            data=zipf,
+            data=buffer,
             file_name="All_Results.zip",
             mime="application/zip"
         )
+
 
 
         print('Successfully created All_Results.zip')
