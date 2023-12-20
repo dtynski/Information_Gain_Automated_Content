@@ -387,7 +387,7 @@ def query_assistant(prompt):
         {"role": "user", "content": prompt}
         ],
         max_tokens=4000,
-        temperature = 0.4
+        temperature = 0.2
     )
     return response.choices[0].message.content
 
@@ -403,13 +403,13 @@ def generate_images_from_placeholders(document):
             # Generate an image
             response = client.images.generate(
                 model="dall-e-3",
-                prompt=f"An image of {description} but done in a very simple way, using metaphor if needed. Avoid including text.",
+                prompt=f"You will be given an image {description} but done in a very simple way, using metaphor if needed. Avoid including text.",
                 size="1792x1024",
                 quality="hd",
                 n=1,
             )
             image_url = response.data[0].url
-            replacements[f'[Insert Image Here: {description}]'] = f'<img src="{image_url}" alt="{description}" width="700"/>'
+            replacements[f'[Insert Image Here: {description}]'] = f'<img src="{image_url}" alt="{description}" width="800"/>'
         except Exception as e:
             print(f"Error generating image for {description}: {e}")
 
@@ -605,7 +605,8 @@ def main():
         The image description should be very specific to help a generative AI render it accurately. 
         Provide these instructions like this: [Insert Image Here: The Image Description] . 
         Also Please include markdown tables from data found in the notes where you think the table will add value and ease of reading for the reader. 
-        Each section will likely have a table or other structured markdown viz. 
+        Each section will likely have a table or other structured markdown viz.
+        Use Headings, Subheadings, Sub-SubHeadings etc in beautiful markdown styling. Also make use of markdown lists, blockquotes, and other ways to make the content more readable, interesting, and useful.
         Use as many relevant sources as possible in each section.
         Be extremely thorough and comprehensive with a focus on making the article as useful and actionable as possible. 
         When referencing a url, do it inline and use [URL Title from the notes,URL from the notes always starting with http or https]. 
