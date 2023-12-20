@@ -512,8 +512,7 @@ def main():
         client.beta.threads.messages.create(
             thread_id=outline_thread_id,
             role="user",
-            content=prompt,
-            file_ids=uploaded_file_ids
+            content=prompt
         )
 
         run_response = client.beta.threads.runs.create(
