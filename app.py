@@ -1009,15 +1009,7 @@ def main():
             file_name="All_Results.zip",
             mime="application/zip"
         )
-        if 'button_clicked' not in st.session_state:
-            st.session_state.button_clicked = False
-        
-        if st.button('Download'):
-            st.session_state.button_clicked = True
-        
-        if st.session_state.button_clicked:
-            # Code to execute after the button has been clicked
-            # This part will run on reruns after the button is clicked
+
 
         print('Successfully created All_Results.zip')
     
