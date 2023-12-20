@@ -1002,14 +1002,22 @@ def main():
         
         
         progress.progress(99)
-        st.markdown(final_article)
-        with open("All_Results.zip", "rb") as fp:
-            btn = st.download_button(
-                label="Download ZIP",
-                data=fp,
-                file_name="All_Results.zip",
-                mime="application/zip"
-            )
+        #st.markdown(final_article)
+        btn = st.download_button(
+            label="Download ZIP",
+            data=zipf,
+            file_name="All_Results.zip",
+            mime="application/zip"
+        )
+        if 'button_clicked' not in st.session_state:
+            st.session_state.button_clicked = False
+        
+        if st.button('Download'):
+            st.session_state.button_clicked = True
+        
+        if st.session_state.button_clicked:
+            # Code to execute after the button has been clicked
+            # This part will run on reruns after the button is clicked
 
         print('Successfully created All_Results.zip')
     
