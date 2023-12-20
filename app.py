@@ -69,7 +69,7 @@ def get_root_domain(url):
 
 def scrape_articles(query,num_articles):
     all_results = []
-
+    num_articles = int(num_articles)
     for i in range(num_articles):  # Iterating over three pages
 
         start_index = i * 10  # Google usually shows 10 results per page
