@@ -403,12 +403,12 @@ def generate_images_from_placeholders(document):
             response = client.images.generate(
                 model="dall-e-3",
                 prompt=f"An image of {description} but done in a very simple way, using metaphor if needed. Avoid including text.",
-                size="1200x900",
+                size="1792x1024",
                 quality="hd",
                 n=1,
             )
             image_url = response.data[0].url
-            replacements[f'[Insert Image Here: {description}]'] = f"![{description}]({image_url})"
+            replacements[f'[Insert Image Here: {description}]'] = f'<img src="{image_url}" alt="{description}" width="800"/>'
         except Exception as e:
             print(f"Error generating image for {description}: {e}")
 
