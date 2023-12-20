@@ -945,8 +945,17 @@ def main():
         progress.progress(99)
         st.markdown(final_article)
         if created_form:
-            survey_form = json.dumps(created_form, indent=4)
-            st.write(survey_form)
+            # Assuming 'created_form' is the response object from the Typeform API request
+            # Extract the URL from the 'Location' header
+            form_url = created_form.headers.get('Location', None)
+        
+            if form_url:
+                st.write("Survey URL:", form_url)
+            else:
+                st.write("Survey URL not found in the response.")
+        else:
+            st.write("No response from form creation.")
+
         with open("All_Results.zip", "rb") as fp:
             btn = st.download_button(
                 label="Download ZIP",
