@@ -575,7 +575,8 @@ def main():
         conversation.append(query_gpt)
         final_article.append(query_gpt)
         i=1
-        while "Article Complete" not in final_article:
+        
+        while not any("Article Complete" in article_section for article_section in final_article):
           progress.progress(70 + 1)
           status.text(f'Writing Article Section {i}')
           
@@ -598,6 +599,7 @@ def main():
           final_query_gpt = query_assistant(str(conversation))
         
           final_article.append(final_query_gpt)
+            
         final_article = " ".join(final_article)
         final_article =  fix_markdown(final_article)
         final_article = remove_sections_within_brackets(final_article)
