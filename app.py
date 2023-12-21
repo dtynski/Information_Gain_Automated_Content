@@ -1020,19 +1020,19 @@ def main():
             buffer.seek(0)
         
         progress.progress(99)
-        if 'data_ready_for_download' in st.session_state and st.session_state.data_ready_for_download:
+      
 
-            btn = st.download_button(
-                label="Download ZIP",
-                data=buffer,
-                file_name="All_Results.zip",
-                mime="application/zip"
-            )
-    
-    
-            st.session_state.process_started = False
-    
-            print('Successfully created All_Results.zip')
+        btn = st.download_button(
+            label="Download ZIP",
+            data=buffer,
+            file_name="All_Results.zip",
+            mime="application/zip"
+        )
+
+
+        st.session_state.process_started = False
+
+        print('Successfully created All_Results.zip')
     
         status.text("Research, outline, and final article generation completed successfully.")
 
