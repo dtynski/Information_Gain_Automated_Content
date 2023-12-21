@@ -535,6 +535,8 @@ def main():
     
             response = client.beta.threads.messages.list(thread_id=outline_thread_id)
             the_outline = response.data[0].content[0].text
+            outline.append(the_outline)
+    
             #st.write(response.data)
             #st.write(the_outline.value)
             prompt = f"""Please significantly extend and improve the outline using the notes found in file ids: {uploaded_file_ids} for the goal of the query: {query}.
@@ -594,7 +596,7 @@ def main():
             aggregate_notes_csv_bytes = convert_df_to_csv_bytes(full_notes)
             all_outlines_csv_bytes = convert_df_to_csv_bytes(df_outline)
     
-            outline = str(outline)
+            final_outline = outline[1]
             
     
             prompt = f"""You will be writing a long-form article based on an outline and a notes corpus. You include everything in the outline, including the top level sections, subsections, and sub-subsections. 
@@ -625,7 +627,7 @@ def main():
             Because the notes are so extensive, you should be referencing sources, all sources should be referenced by the end of the article. 
             When you have finished all the sections return the text - Article Complete - Start with the table of contents, and then write each section of the table of contents one at a time.
             After writing a section, always provide the next section title that needs to be written like this [Next Section to Write: Next Section Title].
-            Here is the outline you will follow: #### {outline} ####. 
+            Here is the outline you will follow: #### {final_outline} ####. 
             Here is the notes corpus to leverage to write as complete and comprehensive an article as possible. 
             Notes Dataframe: #### {full_notes_string} #### 
             Please take your time, think step by step, and return the full section.
@@ -1021,7 +1023,7 @@ def main():
         
         progress.progress(99)
       
-
+        st.session_state.process_started = False
         btn = st.download_button(
             label="Download ZIP",
             data=buffer,
@@ -1030,7 +1032,7 @@ def main():
         )
 
 
-        st.session_state.process_started = False
+        
 
         print('Successfully created All_Results.zip')
     
