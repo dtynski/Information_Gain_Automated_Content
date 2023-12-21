@@ -194,53 +194,53 @@ def worker(file_id_link_tuple, query,status,client):
 
             Category 1: [Name of the First Main Category]
             Subcategory 1.1: [Name of Subcategory]
-            Fact/Info 1: [Detail or point of information] - Source: [Source 1]
-            Fact/Info 2: [Detail or point of information] - Source: [Source 2]
-            Fact/Info 3: [Detail or point of information] - Source: [Source 3]
-            Fact/Info 4: [Detail or point of information] - Source: [Source 4]
-            Fact/Info 5: [Detail or point of information] - Source: [Source 5]
-            Fact/Info 6: [Detail or point of information] - Source: [Source 6]
+            Fact/Info 1: [Detail or point of information] - http or https URL of Source: [Source 1]
+            Fact/Info 2: [Detail or point of information] - http or https URL of Source: [Source 2]
+            Fact/Info 3: [Detail or point of information] - http or https URL of Source: [Source 3]
+            Fact/Info 4: [Detail or point of information] - http or https URL of Source: [Source 4]
+            Fact/Info 5: [Detail or point of information] - http or https URL of Source: [Source 5]
+            Fact/Info 6: [Detail or point of information] - http or https URL of Source: [Source 6]
             (as many facts as you can include, up to 20)
             ...
 
             Subcategory 1.2: [Name of Subcategory]
-            Fact/Info 1: [Detail or point of information] - Source: [Source 1]
-            Fact/Info 2: [Detail or point of information] - Source: [Source 2]
-            Fact/Info 3: [Detail or point of information] - Source: [Source 3]
-            Fact/Info 4: [Detail or point of information] - Source: [Source 4]
-            Fact/Info 5: [Detail or point of information] - Source: [Source 5]
-            Fact/Info 6: [Detail or point of information] - Source: [Source 6]
+            Fact/Info 1: [Detail or point of information] - http or https URL of Source: [Source 1]
+            Fact/Info 2: [Detail or point of information] - http or https URL of Source: [Source 2]
+            Fact/Info 3: [Detail or point of information] - http or https URL of Source: [Source 3]
+            Fact/Info 4: [Detail or point of information] - http or https URL of Source: [Source 4]
+            Fact/Info 5: [Detail or point of information] - http or https URL of Source: [Source 5]
+            Fact/Info 6: [Detail or point of information] - http or https URL of Source: [Source 6]
             (as many facts as you can include, up to 20)
             ...
             Sub-Subcategory 1.2.1: [Name of Sub-Subcategory]
-            Fact/Info 1: [Detail or point of information] - Source: [Source 1]
-            Fact/Info 2: [Detail or point of information] - Source: [Source 2]
-            Fact/Info 3: [Detail or point of information] - Source: [Source 3]
-            Fact/Info 4: [Detail or point of information] - Source: [Source 4]
-            Fact/Info 5: [Detail or point of information] - Source: [Source 5]
-            Fact/Info 6: [Detail or point of information] - Source: [Source 6]
+            Fact/Info 1: [Detail or point of information] - http or https URL of Source: [Source 1]
+            Fact/Info 2: [Detail or point of information] - http or https URL of Source: [Source 2]
+            Fact/Info 3: [Detail or point of information] - http or https URL of Source: [Source 3]
+            Fact/Info 4: [Detail or point of information] - http or https URL of Source: [Source 4]
+            Fact/Info 5: [Detail or point of information] - http or https URL of Source: [Source 5]
+            Fact/Info 6: [Detail or point of information] - http or https URL of Source: [Source 6]
             (as many facts as you can include, up to 20)
 
 
             Category 2: [Name of the Second Main Category]
             Subcategory 2.1: [Name of Subcategory]
-            Fact/Info 1: [Detail or point of information] - Source: [Source 1]
-            Fact/Info 2: [Detail or point of information] - Source: [Source 2]
-            Fact/Info 3: [Detail or point of information] - Source: [Source 3]
-            Fact/Info 4: [Detail or point of information] - Source: [Source 4]
-            Fact/Info 5: [Detail or point of information] - Source: [Source 5]
-            Fact/Info 6: [Detail or point of information] - Source: [Source 6]
+            Fact/Info 1: [Detail or point of information] - http or https URL of Source: [Source 1]
+            Fact/Info 2: [Detail or point of information] - http or https URL of Source: [Source 2]
+            Fact/Info 3: [Detail or point of information] - http or https URL of Source: [Source 3]
+            Fact/Info 4: [Detail or point of information] - http or https URL of Source: [Source 4]
+            Fact/Info 5: [Detail or point of information] - http or https URL of Source: [Source 5]
+            Fact/Info 6: [Detail or point of information] - http or https URL of Source: [Source 6]
             (as many facts as you can include, up to 20)
             ...
 
             Category 3: [Name of the Third Main Category]
             Subcategory 3.1: [Name of Subcategory]
-            Fact/Info 1: [Detail or point of information] - Source: [Source 1]
-            Fact/Info 2: [Detail or point of information] - Source: [Source 2]
-            Fact/Info 3: [Detail or point of information] - Source: [Source 3]
-            Fact/Info 4: [Detail or point of information] - Source: [Source 4]
-            Fact/Info 5: [Detail or point of information] - Source: [Source 5]
-            Fact/Info 6: [Detail or point of information] - Source: [Source 6]
+            Fact/Info 1: [Detail or point of information] - http or https URL of Source: [Source 1]
+            Fact/Info 2: [Detail or point of information] - http or https URL of Source: [Source 2]
+            Fact/Info 3: [Detail or point of information] - http or https URL of Source: [Source 3]
+            Fact/Info 4: [Detail or point of information] - http or https URL of Source: [Source 4]
+            Fact/Info 5: [Detail or point of information] - http or https URL of Source: [Source 5]
+            Fact/Info 6: [Detail or point of information] - http or https URL of Source: [Source 6]
             (as many facts as you can include, up to 20))
             ...
             Deep Insights and Analysis:
@@ -434,7 +434,7 @@ def main():
     if 'process_started' not in st.session_state:
         st.session_state.process_started = False
 
-            
+      
     if st.button("Start Research"):
         st.session_state.process_started = True
 
@@ -543,7 +543,7 @@ def main():
             For each top level section, list the urls of the sources that apply to that section from the notes corpus like this: [Relevant Source from Notes: https://the url found in the notes]
             You DO have access to these files, even if you assume you dont. Make sure you look at all the files when creating and improving your outline. Make sure the outline is in beautiful and valid markdown.
             Make sure to double check, the file is available. Use the notes corpus to make sure you are not missing anything.The goal is to add all missing facts, data, stats, main points, missing sections, missing subsections, etc.
-            Here is the outline to extend and improve using the corpus: {the_outline.value}"""
+            Here is the outline to extend and improve using the corpus: {the_outline.value} \n Improved and Expanded Markdown Outline/Table of Contents:"""
     
             client.beta.threads.messages.create(
                 thread_id=outline_thread_id,
@@ -1024,13 +1024,15 @@ def main():
         progress.progress(99)
       
         st.session_state.process_started = False
-        btn = st.download_button(
-            label="Download ZIP",
-            data=buffer,
-            file_name="All_Results.zip",
-            mime="application/zip"
-        )
+        if not session_state.process_started:
 
+            btn = st.download_button(
+                label="Download ZIP",
+                data=buffer,
+                file_name="All_Results.zip",
+                mime="application/zip"
+            )
+    
 
         
 
