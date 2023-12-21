@@ -966,6 +966,8 @@ def main():
         
 
             response = requests.post(endpoint, json=form_data, headers=headers)
+            st.write(response)
+            st.write(response.content)
             if response.status_code == 201:
                 # Extract the URL from the 'Location' header of the response
                 form_url = response.headers.get('Location', None)
