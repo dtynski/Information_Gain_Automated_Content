@@ -429,9 +429,14 @@ def main():
     final_article = []
     conversation = []
     i = 0
+    
+    # Initialize session state for processing
+    if 'process_started' not in st.session_state:
+        st.session_state.process_started = False
 
             
     if st.button("Start Research"):
+        st.session_state.process_started = True
 
         
         file_ids_attempt = []
@@ -1011,18 +1016,22 @@ def main():
         buffer.seek(0)
     
         progress.progress(99)
+        if st.session_state.process_started:
+            # Your processing code here (scraping, analyzing, etc.)
+            # ...
+            # Set this to False if you want to prevent re-execution on refresh
+            # Provide the buffer's content to the download button
+            btn = st.download_button(
+                label="Download ZIP",
+                data=buffer,
+                file_name="All_Results.zip",
+                mime="application/zip"
+            )
+
+
+            st.session_state.process_started = False
     
-        # Provide the buffer's content to the download button
-        btn = st.download_button(
-            label="Download ZIP",
-            data=buffer,
-            file_name="All_Results.zip",
-            mime="application/zip"
-        )
-
-
-
-        print('Successfully created All_Results.zip')
+            print('Successfully created All_Results.zip')
     
         status.text("Research, outline, and final article generation completed successfully.")
 
